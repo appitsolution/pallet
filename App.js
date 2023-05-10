@@ -7,6 +7,8 @@ import { useFonts } from "expo-font";
 import Home from "./screen/home";
 import CatalogItem from "./screen/catalog-item";
 import Basket from "./screen/basket";
+import Login from "./screen/login";
+import Register from "./screen/register";
 
 const Stack = createStackNavigator();
 
@@ -30,7 +32,7 @@ export default function App() {
             backgroundColor: "#ffffff",
           },
         }}
-        initialRouteName="basket"
+        initialRouteName="login"
       >
         <Stack.Screen
           name="home"
@@ -51,6 +53,23 @@ export default function App() {
         <Stack.Screen
           name="basket"
           component={Basket}
+          options={{
+            animationEnabled: false,
+            headerShown: false,
+          }}
+        />
+
+        <Stack.Screen
+          name="login"
+          component={Login}
+          options={{
+            animationEnabled: false,
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="register"
+          component={Register}
           options={{
             animationEnabled: false,
             headerShown: false,
