@@ -1,80 +1,91 @@
 import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
 import { View, Text, TouchableOpacity, TextInput } from "react-native";
+import Navigation from "../components/Navigation";
 
-const Login = () => {
-  const [loginButtons, setLoginButtons] = useState(0);
+const Sign = () => {
   const navigation = useNavigation();
   return (
     <>
       <View style={{ paddingTop: 50, width: "100%" }}>
         <View style={{ paddingHorizontal: 8 }}>
           <Text style={{ fontSize: 20, lineHeight: 24, fontWeight: "500" }}>
-            Авторизація
+            Контактні дані
           </Text>
         </View>
 
         <View
-          onLayout={(target) => {
-            setLoginButtons(target.nativeEvent.layout.width);
-          }}
           style={{
-            width: "100%",
-            marginTop: 20,
-            flexDirection: "row",
-            columnGap: 5,
-            paddingHorizontal: 8,
-            marginRight: 0,
+            marginHorizontal: 8,
+            borderRadius: 4,
+            paddingTop: 16,
+            paddingBottom: 27,
+            paddingHorizontal: 10,
+            backgroundColor: "#FFFFFF",
+            shadowColor: "#000000",
+            shadowOffset: {
+              width: 0,
+              height: 4,
+            },
+            shadowOpacity: 0.14,
+            shadowRadius: 5,
+            elevation: 1,
+            borderRadius: 4,
+            marginTop: 18,
           }}
         >
-          <TouchableOpacity
+          <Text
             style={{
-              paddingVertical: 14,
-              width: "50%",
-              justifyContent: "center",
-              alignItems: "center",
-              backgroundColor: "#F1F1F1",
-              borderRadius: 4,
+              fontSize: 11,
+              fontWeight: "400",
+              lineHeight: 16,
+              color: "#272727",
+              textAlign: "center",
+              marginBottom: 22,
             }}
-            onPress={() => navigation.navigate("login")}
           >
-            <Text
-              style={{
-                fontSize: 15,
-                lineHeight: 16,
-                fontWeight: "500",
-                color: "#272727",
-                textTransform: "uppercase",
-              }}
-            >
-              Вхід
-            </Text>
-          </TouchableOpacity>
+            Авторизація прискорить оформлення замовлення і дозволить
+            відстежувати інформацію в особистому кабінеті
+          </Text>
+
           <TouchableOpacity
+            onPress={() => navigation.navigate("login")}
             style={{
               paddingVertical: 14,
-              width: loginButtons / 2 - 13,
-              justifyContent: "center",
               alignItems: "center",
-              borderColor: "#F1F1F1",
+              justifyContent: "center",
+              backgroundColor: "#FFFFFF",
+              borderColor: "#272727",
               borderWidth: 1,
               borderRadius: 4,
+              marginHorizontal: 25,
             }}
-            onPress={() => navigation.navigate("register")}
           >
             <Text
               style={{
-                fontSize: 15,
-                lineHeight: 16,
+                fontSize: 13,
                 fontWeight: "500",
+                lineHeight: 16,
                 color: "#272727",
                 textTransform: "uppercase",
               }}
             >
-              Реєстрація
+              Увійти в магазин
             </Text>
           </TouchableOpacity>
         </View>
+
+        <Text
+          style={{
+            fontSize: 13,
+            lineHeight: 17,
+            fontWeight: "600",
+            marginTop: 30,
+            marginLeft: 8,
+          }}
+        >
+          Або стати новим покупцем
+        </Text>
 
         <View style={{ marginTop: 30, paddingHorizontal: 8, gap: 25 }}>
           <View style={{ position: "relative" }}>
@@ -92,7 +103,7 @@ const Login = () => {
                 zIndex: 2,
               }}
             >
-              Телефон або електронна почта
+              Ваше ім’я
             </Text>
             <TextInput
               style={{
@@ -119,7 +130,34 @@ const Login = () => {
                 zIndex: 2,
               }}
             >
-              Пароль
+              Прізвище
+            </Text>
+            <TextInput
+              style={{
+                paddingVertical: 20,
+                paddingLeft: 16,
+                borderColor: "#B3B0AF",
+                borderWidth: 1.5,
+                borderRadius: 4,
+              }}
+            />
+          </View>
+          <View style={{ position: "relative" }}>
+            <Text
+              style={{
+                paddingHorizontal: 4,
+                fontSize: 12,
+                lineHeight: 16,
+                fontWeight: "600",
+                color: "rgba(0, 0, 0, 0.6)",
+                backgroundColor: "white",
+                position: "absolute",
+                top: -8,
+                left: 9,
+                zIndex: 2,
+              }}
+            >
+              Телефон
             </Text>
             <TextInput
               style={{
@@ -172,13 +210,14 @@ const Login = () => {
                 textTransform: "uppercase",
               }}
             >
-              Увійти
+              Продовжити
             </Text>
           </TouchableOpacity>
         </View>
       </View>
+      <Navigation />
     </>
   );
 };
 
-export default Login;
+export default Sign;

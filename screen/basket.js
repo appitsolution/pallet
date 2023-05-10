@@ -2,6 +2,7 @@ import { View, Text, Image, TouchableOpacity, ScrollView } from "react-native";
 import Navigation from "../components/Navigation";
 import catalog from "../assets/catalog.jpg";
 import CloseBasket from "../assets/Icons/CloseBasket";
+import { useNavigation } from "@react-navigation/native";
 
 const catalogData = [
   {
@@ -37,6 +38,7 @@ const catalogData = [
 ];
 
 const Basket = () => {
+  const navigation = useNavigation();
   return (
     <>
       <View style={{ backgroundColor: "#ffffff" }}>
@@ -107,6 +109,7 @@ const Basket = () => {
           </View>
 
           <TouchableOpacity
+            onPress={() => navigation.navigate("home")}
             style={{
               paddingVertical: 16,
               justifyContent: "center",
@@ -129,6 +132,7 @@ const Basket = () => {
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
+            onPress={() => navigation.navigate("sign")}
             style={{
               paddingVertical: 16,
               justifyContent: "center",

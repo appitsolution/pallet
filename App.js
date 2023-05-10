@@ -9,6 +9,7 @@ import CatalogItem from "./screen/catalog-item";
 import Basket from "./screen/basket";
 import Login from "./screen/login";
 import Register from "./screen/register";
+import Sign from "./screen/sign";
 
 const Stack = createStackNavigator();
 
@@ -32,7 +33,7 @@ export default function App() {
             backgroundColor: "#ffffff",
           },
         }}
-        initialRouteName="login"
+        initialRouteName="sign"
       >
         <Stack.Screen
           name="home"
@@ -70,6 +71,14 @@ export default function App() {
         <Stack.Screen
           name="register"
           component={Register}
+          options={{
+            animationEnabled: false,
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="sign"
+          component={Sign}
           options={{
             animationEnabled: false,
             headerShown: false,

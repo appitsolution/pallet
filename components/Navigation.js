@@ -88,8 +88,33 @@ const Navigation = ({ active = "" }) => {
           style={{ width: "25%", alignItems: "center" }}
           onPress={() => navigation.navigate("basket")}
         >
-          <View style={{ height: 25 }}>
+          <View style={{ height: 25, position: "relation" }}>
             <MenuIcons id="shop" active={active === "shop" ? true : false} />
+            <View
+              style={{
+                display: active === "shop" ? "" : "none",
+                position: "absolute",
+                top: -5,
+                right: -30,
+                borderColor: "#F40000",
+                borderWidth: 1,
+                borderRadius: 10,
+                zIndex: 2,
+                backgroundColor: "#ffffff",
+                paddingHorizontal: 4,
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 11,
+                  lineHeight: 16,
+                  fontWeight: "500",
+                  color: "#F40000",
+                }}
+              >
+                1050
+              </Text>
+            </View>
           </View>
           <Text
             style={{
