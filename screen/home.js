@@ -61,148 +61,147 @@ const Home = () => {
   return (
     <View style={styles.home}>
       <Logo />
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-        <View style={styles.banner}>
-          <Swiper showsButtons={false}>
-            <View style={styles.bannerItem}>
-              <View style={styles.bannerFirst}>
-                <Text>Test</Text>
-              </View>
-              <View style={styles.bannerLast}></View>
-            </View>
-            <View style={styles.bannerItem}>
-              <View style={styles.bannerFirst}></View>
-              <View style={styles.bannerLast}></View>
-            </View>
-          </Swiper>
-        </View>
 
-        <View style={{ flexDirection: "row", width: "100%", marginTop: 20 }}>
-          <TouchableOpacity
-            style={{
-              flex: 1,
-              paddingVertical: 12,
+      <View style={styles.banner}>
+        <Swiper showsButtons={false}>
+          <View style={styles.bannerItem}>
+            <View style={styles.bannerFirst}>
+              <Text>Test</Text>
+            </View>
+            <View style={styles.bannerLast}></View>
+          </View>
+          <View style={styles.bannerItem}>
+            <View style={styles.bannerFirst}></View>
+            <View style={styles.bannerLast}></View>
+          </View>
+        </Swiper>
+      </View>
 
-              borderBottomColor: testTab ? "#272727" : "transparent",
-              borderBottomWidth: 4,
-            }}
-            onPress={() => setTestTab(true)}
-          >
-            <Text
-              style={{
-                textAlign: "center",
-                textTransform: "uppercase",
-                fontSize: 13,
-                lineHeight: 16,
-                fontWeight: 500,
-              }}
-            >
-              Поставка палет
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
+      <View style={{ flexDirection: "row", width: "100%", marginTop: 20 }}>
+        <TouchableOpacity
+          style={{
+            flex: 1,
+            paddingVertical: 12,
+
+            borderBottomColor: testTab ? "#272727" : "transparent",
+            borderBottomWidth: 4,
+          }}
+          onPress={() => setTestTab(true)}
+        >
+          <Text
             style={{
-              flex: 1,
-              paddingVertical: 12,
-              borderBottomColor: !testTab ? "#272727" : "transparent",
-              borderBottomWidth: 4,
-            }}
-            onPress={() => {
-              setTestTab(false);
+              textAlign: "center",
+              textTransform: "uppercase",
+              fontSize: 13,
+              lineHeight: 16,
+              fontWeight: 500,
             }}
           >
-            <Text
-              style={{
-                textAlign: "center",
-                textTransform: "uppercase",
-                fontSize: 13,
-                lineHeight: 16,
-                fontWeight: 500,
-              }}
-            >
-              Викуп піддонів
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.sortButton}>
-          <FlatList
-            style={styles.sortButtonList}
-            data={sortButtons}
-            renderItem={({ item }) => {
-              return (
-                <TouchableOpacity
-                  style={{
-                    ...styles.sortButtonItem,
-                    backgroundColor: item.active ? "#272727" : "#F1F1F1",
-                  }}
-                >
-                  <Text
-                    style={{
-                      ...styles.sortButtonItemText,
-                      color: item.active ? "#ffffff" : "#272727",
-                    }}
-                  >
-                    {item.text}
-                  </Text>
-                </TouchableOpacity>
-              );
+            Поставка палет
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={{
+            flex: 1,
+            paddingVertical: 12,
+            borderBottomColor: !testTab ? "#272727" : "transparent",
+            borderBottomWidth: 4,
+          }}
+          onPress={() => {
+            setTestTab(false);
+          }}
+        >
+          <Text
+            style={{
+              textAlign: "center",
+              textTransform: "uppercase",
+              fontSize: 13,
+              lineHeight: 16,
+              fontWeight: 500,
             }}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-          />
-        </View>
+          >
+            Викуп піддонів
+          </Text>
+        </TouchableOpacity>
+      </View>
 
-        <View style={{ width: "100%", marginTop: 20, gap: 16 }}>
-          <FlatList
-            data={catalogData}
-            renderItem={({ item }) => (
-              <View
+      <View style={styles.sortButton}>
+        <FlatList
+          style={styles.sortButtonList}
+          data={sortButtons}
+          renderItem={({ item }) => {
+            return (
+              <TouchableOpacity
                 style={{
-                  backgroundColor: "#FFFFFF",
-                  shadowColor: "#000",
-                  shadowOffset: {
-                    width: 0,
-                    height: 1,
-                  },
-                  shadowOpacity: 0.14,
-                  shadowRadius: 1,
-                  elevation: 2,
-                  borderRadius: 4,
-                  padding: 12,
-                  paddingRight: 16,
-                  flexDirection: "row",
-                  gap: 14,
+                  ...styles.sortButtonItem,
+                  backgroundColor: item.active ? "#272727" : "#F1F1F1",
                 }}
               >
-                <Image source={catalog} style={{ width: "40%" }} />
-                <View style={{ width: "60%" }}>
-                  <Text
-                    style={{
-                      fontSize: 13,
-                      lineHeight: 16,
-                      fontWeight: "700",
-                      marginBottom: 5,
-                    }}
-                  >
-                    {item.title}
-                  </Text>
-                  <Text
-                    style={{ fontSize: 13, lineHeight: 18, fontWeight: "400" }}
-                  >
-                    {item.desc}
-                  </Text>
-                  <TouchableOpacity
-                    style={{ marginLeft: "auto", marginRight: 16 }}
-                  >
-                    <CatalogPlus />
-                  </TouchableOpacity>
-                </View>
+                <Text
+                  style={{
+                    ...styles.sortButtonItemText,
+                    color: item.active ? "#ffffff" : "#272727",
+                  }}
+                >
+                  {item.text}
+                </Text>
+              </TouchableOpacity>
+            );
+          }}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+        />
+      </View>
+
+      <View style={{ width: "100%", marginTop: 20, gap: 16 }}>
+        <FlatList
+          data={catalogData}
+          renderItem={({ item }) => (
+            <View
+              style={{
+                backgroundColor: "#FFFFFF",
+                shadowColor: "#000",
+                shadowOffset: {
+                  width: 0,
+                  height: 1,
+                },
+                shadowOpacity: 0.14,
+                shadowRadius: 1,
+                elevation: 2,
+                borderRadius: 4,
+                padding: 12,
+                paddingRight: 16,
+                flexDirection: "row",
+                gap: 14,
+              }}
+            >
+              <Image source={catalog} style={{ width: "40%" }} />
+              <View style={{ width: "60%" }}>
+                <Text
+                  style={{
+                    fontSize: 13,
+                    lineHeight: 16,
+                    fontWeight: "700",
+                    marginBottom: 5,
+                  }}
+                >
+                  {item.title}
+                </Text>
+                <Text
+                  style={{ fontSize: 13, lineHeight: 18, fontWeight: "400" }}
+                >
+                  {item.desc}
+                </Text>
+                <TouchableOpacity
+                  style={{ marginLeft: "auto", marginRight: 16 }}
+                >
+                  <CatalogPlus />
+                </TouchableOpacity>
               </View>
-            )}
-          />
-        </View>
-      </ScrollView>
+            </View>
+          )}
+        />
+      </View>
     </View>
   );
 };
