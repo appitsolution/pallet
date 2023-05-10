@@ -1,10 +1,12 @@
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
-import { StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { useFonts } from "expo-font";
 import Home from "./screen/home";
+import CatalogItem from "./screen/catalog-item";
+import Basket from "./screen/basket";
 
 const Stack = createStackNavigator();
 
@@ -22,10 +24,33 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator>
+      <Stack.Navigator
+        screenOptions={{
+          cardStyle: {
+            backgroundColor: "#ffffff",
+          },
+        }}
+        initialRouteName="basket"
+      >
         <Stack.Screen
           name="home"
           component={Home}
+          options={{
+            animationEnabled: false,
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="catalog-item"
+          component={CatalogItem}
+          options={{
+            animationEnabled: false,
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="basket"
+          component={Basket}
           options={{
             animationEnabled: false,
             headerShown: false,

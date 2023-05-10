@@ -14,6 +14,7 @@ import { useState } from "react";
 import catalog from "../assets/catalog.jpg";
 import CatalogPlus from "../assets/Icons/CatalogPlus";
 import Navigation from "../components/Navigation";
+import { useNavigation } from "@react-navigation/native";
 
 const sortButtons = [
   { text: "Всі", active: true },
@@ -59,6 +60,8 @@ const catalogData = [
 
 const Home = () => {
   const [testTab, setTestTab] = useState(true);
+
+  const router = useNavigation();
   return (
     <>
       <View style={styles.home}>
@@ -167,7 +170,8 @@ const Home = () => {
 
           <View style={{ width: "100%", marginTop: 20, gap: 16 }}>
             {catalogData.map((item, index) => (
-              <View
+              <TouchableOpacity
+                onPress={() => router.navigate("catalog-item", { test: "2" })}
                 key={index}
                 style={{
                   backgroundColor: "#FFFFFF",
@@ -209,7 +213,7 @@ const Home = () => {
                     <CatalogPlus />
                   </TouchableOpacity>
                 </View>
-              </View>
+              </TouchableOpacity>
             ))}
           </View>
         </ScrollView>

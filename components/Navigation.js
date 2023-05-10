@@ -1,7 +1,9 @@
 import { View, Text, TouchableOpacity } from "react-native";
 import MenuIcons from "../assets/Icons/MenuIcons";
+import { useNavigation } from "@react-navigation/native";
 
 const Navigation = ({ active = "" }) => {
+  const navigation = useNavigation();
   return (
     <View
       style={{
@@ -13,6 +15,31 @@ const Navigation = ({ active = "" }) => {
         backgroundColor: "#ffffff",
         zIndex: 2,
         paddingBottom: 40,
+
+        elevation: 5,
+        shadowColor: "#000",
+        shadowOffset: {
+          width: 0,
+          height: 8,
+        },
+        shadowOpacity: 0.14,
+        shadowRadius: 10,
+
+        elevation: 14,
+        shadowOffset: {
+          width: 0,
+          height: 3,
+        },
+        shadowOpacity: 0.12,
+        shadowRadius: 14,
+
+        elevation: 5,
+        shadowOffset: {
+          width: 0,
+          height: 5,
+        },
+        shadowOpacity: 0.2,
+        shadowRadius: 5,
       }}
     >
       <View
@@ -24,7 +51,10 @@ const Navigation = ({ active = "" }) => {
           borderBottomWidth: 0.2,
         }}
       >
-        <TouchableOpacity style={{ width: "25%", alignItems: "center" }}>
+        <TouchableOpacity
+          style={{ width: "25%", alignItems: "center" }}
+          onPress={() => navigation.navigate("home")}
+        >
           <View style={{ height: 25 }}>
             <MenuIcons id="home" active={active === "home" ? true : false} />
           </View>
@@ -54,7 +84,10 @@ const Navigation = ({ active = "" }) => {
             Бонуси
           </Text>
         </TouchableOpacity>
-        <TouchableOpacity style={{ width: "25%", alignItems: "center" }}>
+        <TouchableOpacity
+          style={{ width: "25%", alignItems: "center" }}
+          onPress={() => navigation.navigate("basket")}
+        >
           <View style={{ height: 25 }}>
             <MenuIcons id="shop" active={active === "shop" ? true : false} />
           </View>
