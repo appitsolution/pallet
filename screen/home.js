@@ -39,6 +39,21 @@ const catalogData = [
     desc: `Розміри: 800х1200х144(мм). Навантаження: до 2500кг. Маркування:
         знаками EUR і відмітками IPPC`,
   },
+  {
+    title: "Європіддон б/в 1-й сорт, дерев’яний, світлий.",
+    desc: `Розміри: 800х1200х144(мм). Навантаження: до 2500кг. Маркування:
+        знаками EUR і відмітками IPPC`,
+  },
+  {
+    title: "Європіддон б/в 1-й сорт, дерев’яний, світлий.",
+    desc: `Розміри: 800х1200х144(мм). Навантаження: до 2500кг. Маркування:
+        знаками EUR і відмітками IPPC`,
+  },
+  {
+    title: "Європіддон б/в 1-й сорт, дерев’яний, світлий.",
+    desc: `Розміри: 800х1200х144(мм). Навантаження: до 2500кг. Маркування:
+        знаками EUR і відмітками IPPC`,
+  },
 ];
 
 const Home = () => {
@@ -139,50 +154,53 @@ const Home = () => {
         </View>
 
         <View style={{ width: "100%", marginTop: 20, gap: 16 }}>
-          {catalogData.map((item) => (
-            <View
-              style={{
-                backgroundColor: "#FFFFFF",
-                shadowColor: "#000",
-                shadowOffset: {
-                  width: 0,
-                  height: 1,
-                },
-                shadowOpacity: 0.14,
-                shadowRadius: 1,
-                elevation: 2,
-                borderRadius: 4,
-                padding: 12,
-                paddingRight: 16,
-                flexDirection: "row",
-                gap: 14,
-              }}
-            >
-              <Image source={catalog} style={{ width: "40%" }} />
-              <View style={{ width: "60%" }}>
-                <Text
-                  style={{
-                    fontSize: 13,
-                    lineHeight: 16,
-                    fontWeight: "700",
-                    marginBottom: 5,
-                  }}
-                >
-                  {item.title}
-                </Text>
-                <Text
-                  style={{ fontSize: 13, lineHeight: 18, fontWeight: "400" }}
-                >
-                  {item.desc}
-                </Text>
-                <TouchableOpacity
-                  style={{ marginLeft: "auto", marginRight: 16 }}
-                >
-                  <CatalogPlus />
-                </TouchableOpacity>
+          <FlatList
+            data={catalogData}
+            renderItem={({ item }) => (
+              <View
+                style={{
+                  backgroundColor: "#FFFFFF",
+                  shadowColor: "#000",
+                  shadowOffset: {
+                    width: 0,
+                    height: 1,
+                  },
+                  shadowOpacity: 0.14,
+                  shadowRadius: 1,
+                  elevation: 2,
+                  borderRadius: 4,
+                  padding: 12,
+                  paddingRight: 16,
+                  flexDirection: "row",
+                  gap: 14,
+                }}
+              >
+                <Image source={catalog} style={{ width: "40%" }} />
+                <View style={{ width: "60%" }}>
+                  <Text
+                    style={{
+                      fontSize: 13,
+                      lineHeight: 16,
+                      fontWeight: "700",
+                      marginBottom: 5,
+                    }}
+                  >
+                    {item.title}
+                  </Text>
+                  <Text
+                    style={{ fontSize: 13, lineHeight: 18, fontWeight: "400" }}
+                  >
+                    {item.desc}
+                  </Text>
+                  <TouchableOpacity
+                    style={{ marginLeft: "auto", marginRight: 16 }}
+                  >
+                    <CatalogPlus />
+                  </TouchableOpacity>
+                </View>
               </View>
-            </View>
-          ))}
+            )}
+          />
         </View>
       </ScrollView>
     </View>
