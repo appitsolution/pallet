@@ -39,16 +39,6 @@ const catalogData = [
     desc: `Розміри: 800х1200х144(мм). Навантаження: до 2500кг. Маркування:
         знаками EUR і відмітками IPPC`,
   },
-  {
-    title: "Європіддон б/в 1-й сорт, дерев’яний, світлий.",
-    desc: `Розміри: 800х1200х144(мм). Навантаження: до 2500кг. Маркування:
-        знаками EUR і відмітками IPPC`,
-  },
-  {
-    title: "Європіддон б/в 1-й сорт, дерев’яний, світлий.",
-    desc: `Розміри: 800х1200х144(мм). Навантаження: до 2500кг. Маркування:
-        знаками EUR і відмітками IPPC`,
-  },
 ];
 
 const Home = () => {
@@ -57,6 +47,21 @@ const Home = () => {
     <View style={styles.home}>
       <Logo />
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+        <View style={styles.banner}>
+          <Swiper showsButtons={false}>
+            <View style={styles.bannerItem}>
+              <View style={styles.bannerFirst}>
+                <Text>Test</Text>
+              </View>
+              <View style={styles.bannerLast}></View>
+            </View>
+            <View style={styles.bannerItem}>
+              <View style={styles.bannerFirst}></View>
+              <View style={styles.bannerLast}></View>
+            </View>
+          </Swiper>
+        </View>
+
         <View style={{ flexDirection: "row", width: "100%", marginTop: 20 }}>
           <TouchableOpacity
             style={{
