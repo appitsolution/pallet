@@ -141,7 +141,7 @@ const Home = () => {
             </Swiper>
           </View>
 
-          <View>
+          <View style={styles.grey}>
             <View style={styles.tabs}>
               <TouchableOpacity
                 style={styles.tabsItem(testTab)}
