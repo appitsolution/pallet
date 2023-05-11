@@ -33,7 +33,7 @@ export default function App() {
             backgroundColor: "#ffffff",
           },
         }}
-        initialRouteName="sign"
+        initialRouteName="home"
       >
         <Stack.Screen
           name="home"

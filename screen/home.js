@@ -3,18 +3,47 @@ import {
   Text,
   FlatList,
   TouchableOpacity,
-  StyleSheet,
   ScrollView,
   Image,
+  ImageBackground,
 } from "react-native";
-import normal from "../style/normal";
 import Logo from "../components/Logo";
 import Swiper from "react-native-swiper";
 import { useState } from "react";
-import catalog from "../assets/catalog.jpg";
+import catalog from "../assets/catalog.png";
 import CatalogPlus from "../assets/Icons/CatalogPlus";
 import Navigation from "../components/Navigation";
 import { useNavigation } from "@react-navigation/native";
+import styles from "../style/homeStyle";
+import slide1 from "../assets/images/slider/slide-1.jpg";
+import slide2 from "../assets/images/slider/slide-2.jpg";
+import slide3 from "../assets/images/slider/slide-3.jpg";
+import slide4 from "../assets/images/slider/slide-4.jpg";
+import bonus from "../assets/images/slider/bonus.jpg";
+import { StatusBar } from "expo-status-bar";
+
+const slideData = [
+  {
+    id: "1",
+    image: slide1,
+    bonus: true,
+  },
+  {
+    id: "2",
+    image: slide2,
+    bonus: false,
+  },
+  {
+    id: "3",
+    image: slide3,
+    bonus: false,
+  },
+  {
+    id: "4",
+    image: slide4,
+    bonus: false,
+  },
+];
 
 const sortButtons = [
   { text: "Всі", active: true },
@@ -66,150 +95,100 @@ const Home = () => {
     <>
       <View style={styles.home}>
         <ScrollView
-          contentContainerStyle={{ flexGrow: 1, paddingBottom: 250 }}
+          contentContainerStyle={styles.scrollViewContainer}
           showsVerticalScrollIndicator={false}
         >
-          <Logo />
+          <Logo color="white" />
           <View style={styles.banner}>
             <Swiper
               showsButtons={false}
-              paginationStyle={{ position: "absolute", bottom: -20 }}
+              paginationStyle={styles.bannerPagination}
+              activeDotStyle={styles.bannerActiveDot}
+              dotStyle={styles.bannerDot}
+              autoplay
             >
-              <View style={styles.bannerItem}>
-                <View style={styles.bannerFirst}>
-                  <Text>Акції, програми, сертифікати</Text>
-                </View>
-                <View style={styles.bannerLast}></View>
-              </View>
-              <View style={styles.bannerItem}>
-                <View style={styles.bannerFirst}></View>
-                <View style={styles.bannerLast}></View>
-              </View>
+              {slideData.map((item) => {
+                if (item.bonus) {
+                  return (
+                    <View style={styles.bannerItem} key={item.id}>
+                      <View style={styles.bannerFirstBonus}>
+                        <ImageBackground
+                          source={item.image}
+                          style={{ width: "100%", height: "100%" }}
+                        ></ImageBackground>
+                      </View>
+                      <View style={styles.bannerLast}>
+                        <ImageBackground
+                          source={bonus}
+                          style={{ width: "100%", height: "100%" }}
+                        ></ImageBackground>
+                      </View>
+                    </View>
+                  );
+                } else {
+                  return (
+                    <View style={styles.bannerItem} key={item.id}>
+                      <View style={styles.bannerFirst}>
+                        <ImageBackground
+                          source={item.image}
+                          style={{ width: "100%", height: "100%" }}
+                        ></ImageBackground>
+                      </View>
+                    </View>
+                  );
+                }
+              })}
             </Swiper>
           </View>
 
           <View>
-            <View
-              style={{ flexDirection: "row", width: "100%", marginTop: 20 }}
-            >
+            <View style={styles.tabs}>
               <TouchableOpacity
-                style={{
-                  flex: 1,
-                  paddingVertical: 12,
-
-                  borderBottomColor: testTab ? "#272727" : "transparent",
-                  borderBottomWidth: 4,
-                }}
+                style={styles.tabsItem(testTab)}
                 onPress={() => setTestTab(true)}
               >
-                <Text
-                  style={{
-                    textAlign: "center",
-                    textTransform: "uppercase",
-                    fontSize: 13,
-                    lineHeight: 16,
-                    fontWeight: 500,
-                  }}
-                >
-                  Поставка палет
-                </Text>
+                <Text style={styles.tabsText}>Поставка палет</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={{
-                  flex: 1,
-                  paddingVertical: 12,
-                  borderBottomColor: !testTab ? "#272727" : "transparent",
-                  borderBottomWidth: 4,
-                }}
+                style={styles.tabsItem(!testTab)}
                 onPress={() => {
                   setTestTab(false);
                 }}
               >
-                <Text
-                  style={{
-                    textAlign: "center",
-                    textTransform: "uppercase",
-                    fontSize: 13,
-                    lineHeight: 16,
-                    fontWeight: 500,
-                  }}
-                >
-                  Викуп піддонів
-                </Text>
+                <Text style={styles.tabsText}>Викуп піддонів</Text>
               </TouchableOpacity>
+              <View style={styles.tabsBorder(testTab)}></View>
             </View>
 
             <View style={styles.sortButton}>
               <FlatList
                 style={styles.sortButtonList}
                 data={sortButtons}
-                renderItem={({ item }) => {
-                  return (
-                    <TouchableOpacity
-                      style={{
-                        ...styles.sortButtonItem,
-                        backgroundColor: item.active ? "#272727" : "#F1F1F1",
-                      }}
-                    >
-                      <Text
-                        style={{
-                          ...styles.sortButtonItemText,
-                          color: item.active ? "#ffffff" : "#272727",
-                        }}
-                      >
-                        {item.text}
-                      </Text>
-                    </TouchableOpacity>
-                  );
-                }}
+                renderItem={({ item }) => (
+                  <TouchableOpacity style={styles.sortButtonItem(item.active)}>
+                    <Text style={styles.sortButtonItemText(item.active)}>
+                      {item.text}
+                    </Text>
+                  </TouchableOpacity>
+                )}
                 horizontal
                 showsHorizontalScrollIndicator={false}
               />
             </View>
           </View>
 
-          <View style={{ width: "100%", marginTop: 20, gap: 16 }}>
+          <View style={styles.catalogContainer}>
             {catalogData.map((item, index) => (
               <TouchableOpacity
                 onPress={() => router.navigate("catalog-item", { test: "2" })}
                 key={index}
-                style={{
-                  backgroundColor: "#FFFFFF",
-                  shadowColor: "#000",
-                  shadowOffset: {
-                    width: 0,
-                    height: 1,
-                  },
-                  shadowOpacity: 0.14,
-                  shadowRadius: 1,
-                  elevation: 2,
-                  borderRadius: 4,
-                  padding: 12,
-                  paddingRight: 16,
-                  flexDirection: "row",
-                  gap: 14,
-                }}
+                style={styles.catalogItem}
               >
-                <Image source={catalog} style={{ width: "40%" }} />
-                <View style={{ width: "60%" }}>
-                  <Text
-                    style={{
-                      fontSize: 13,
-                      lineHeight: 16,
-                      fontWeight: "700",
-                      marginBottom: 5,
-                    }}
-                  >
-                    {item.title}
-                  </Text>
-                  <Text
-                    style={{ fontSize: 13, lineHeight: 18, fontWeight: "400" }}
-                  >
-                    {item.desc}
-                  </Text>
-                  <TouchableOpacity
-                    style={{ marginLeft: "auto", marginRight: 16 }}
-                  >
+                <Image source={catalog} style={styles.catalogImg} />
+                <View style={styles.catalogContent}>
+                  <Text style={styles.catalogTitle}>{item.title}</Text>
+                  <Text style={styles.catalogDesc}>{item.desc}</Text>
+                  <TouchableOpacity style={styles.catalogBasket}>
                     <CatalogPlus />
                   </TouchableOpacity>
                 </View>
@@ -219,62 +198,9 @@ const Home = () => {
         </ScrollView>
       </View>
       <Navigation active="home" />
+      <StatusBar style="light" />
     </>
   );
 };
-
-const styles = StyleSheet.create({
-  home: {
-    ...normal.containerTop,
-    backgroundColor: "#ffffff",
-  },
-  banner: {
-    position: "relative",
-    marginTop: 12,
-    height: "100%",
-    maxHeight: 142,
-  },
-  bannerItem: {
-    flex: 1,
-    flexDirection: "row",
-    columnGap: 4,
-    marginHorizontal: 4,
-  },
-  bannerFirst: {
-    width: "70%",
-    backgroundColor: "#D8D8D8",
-    borderRadius: 8,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  bannerLast: {
-    width: "30%",
-    backgroundColor: "#D8D8D8",
-    borderRadius: 8,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  sortButton: {
-    marginTop: 30,
-  },
-  sortButtonList: {
-    width: "100%",
-    gap: 7,
-  },
-  sortButtonItem: {
-    marginHorizontal: 5,
-    borderRadius: 5,
-    overflow: "hidden",
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-  },
-
-  sortButtonItemText: {
-    fontSize: 14,
-    lineHeight: 20,
-    fontWeight: 500,
-    color: "#272727",
-  },
-});
 
 export default Home;
