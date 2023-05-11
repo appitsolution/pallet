@@ -6,10 +6,11 @@ import {
   ScrollView,
   Image,
   ImageBackground,
+  StatusBar,
 } from "react-native";
 import Logo from "../components/Logo";
 import Swiper from "react-native-swiper";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import catalog from "../assets/catalog.png";
 import CatalogPlus from "../assets/Icons/CatalogPlus";
 import Navigation from "../components/Navigation";
@@ -20,7 +21,6 @@ import slide2 from "../assets/images/slider/slide-2.jpg";
 import slide3 from "../assets/images/slider/slide-3.jpg";
 import slide4 from "../assets/images/slider/slide-4.jpg";
 import bonus from "../assets/images/slider/bonus.jpg";
-import { StatusBar } from "expo-status-bar";
 
 const slideData = [
   {
@@ -198,7 +198,7 @@ const Home = () => {
         </ScrollView>
       </View>
       <Navigation active="home" />
-      <StatusBar style="light" />
+      <StatusBar barStyle="dark-content" />
     </>
   );
 };

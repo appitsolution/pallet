@@ -1,6 +1,5 @@
-import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, StatusBar } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { useFonts } from "expo-font";
@@ -85,7 +84,7 @@ export default function App() {
           }}
         />
       </Stack.Navigator>
-      <StatusBar style="auto" />
+      <StatusBar barStyle="default" />
     </NavigationContainer>
   );
 }

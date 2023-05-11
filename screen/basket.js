@@ -53,7 +53,7 @@ const Basket = () => {
           contentContainerStyle={styles.scrollView}
           showsVerticalScrollIndicator={false}
         >
-          {catalogData.length !== 0 ? (
+          {catalogData.length === 0 ? (
             <>
               <View style={styles.basketList}>
                 {catalogData.map((item, index) => (
