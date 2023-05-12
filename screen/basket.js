@@ -27,7 +27,7 @@ const Basket = () => {
       const result = JSON.parse(value);
       setBasketData(result);
     });
-  }, []);
+  });
 
   const deleteBasket = async (id) => {
     const basket = await AsyncStorage.getItem("basket");

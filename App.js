@@ -9,6 +9,8 @@ import Basket from "./screen/basket";
 import Login from "./screen/login";
 import Register from "./screen/register";
 import Sign from "./screen/sign";
+import Profile from "./screen/profile";
+import ProfileData from "./screen/profile/profile-data";
 
 const Stack = createStackNavigator();
 
@@ -32,7 +34,7 @@ export default function App() {
             backgroundColor: "#ffffff",
           },
         }}
-        initialRouteName="login"
+        initialRouteName="profile/data"
       >
         <Stack.Screen
           name="home"
@@ -78,6 +80,22 @@ export default function App() {
         <Stack.Screen
           name="sign"
           component={Sign}
+          options={{
+            animationEnabled: false,
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="profile"
+          component={Profile}
+          options={{
+            animationEnabled: false,
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="profile/data"
+          component={ProfileData}
           options={{
             animationEnabled: false,
             headerShown: false,

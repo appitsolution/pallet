@@ -144,7 +144,10 @@ const Navigation = ({ active = "", scoreBasket = 0 }) => {
             Кошик
           </Text>
         </TouchableOpacity>
-        <TouchableOpacity style={{ width: "25%", alignItems: "center" }}>
+        <TouchableOpacity
+          style={{ width: "25%", alignItems: "center" }}
+          onPress={() => navigation.navigate("profile")}
+        >
           <View style={{ height: 25 }}>
             <MenuIcons
               id="profile"

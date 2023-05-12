@@ -17,7 +17,6 @@ const Login = () => {
         login,
         password,
       });
-      console.log(result);
       Alert.alert("Login", "ok");
     } catch (err) {
       console.log(err);
