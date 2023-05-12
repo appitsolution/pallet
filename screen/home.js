@@ -6,21 +6,23 @@ import {
   ScrollView,
   Image,
   ImageBackground,
-  StatusBar,
 } from "react-native";
 import Logo from "../components/Logo";
 import Swiper from "react-native-swiper";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import catalog from "../assets/catalog.png";
 import CatalogPlus from "../assets/Icons/CatalogPlus";
 import Navigation from "../components/Navigation";
 import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import styles from "../style/homeStyle";
 import slide1 from "../assets/images/slider/slide-1.jpg";
 import slide2 from "../assets/images/slider/slide-2.jpg";
 import slide3 from "../assets/images/slider/slide-3.jpg";
 import slide4 from "../assets/images/slider/slide-4.jpg";
 import bonus from "../assets/images/slider/bonus.jpg";
+
+import { StatusBar } from "expo-status-bar";
 
 const slideData = [
   {
@@ -56,31 +58,37 @@ const sortButtons = [
 
 const catalogData = [
   {
+    id: "1",
     title: "Європіддон б/в 1-й сорт, дерев’яний, світлий.",
     desc: `Розміри: 800х1200х144(мм). Навантаження: до 2500кг. Маркування:
         знаками EUR і відмітками IPPC`,
   },
   {
+    id: "2",
     title: "Європіддон б/в 1-й сорт, дерев’яний, світлий.",
     desc: `Розміри: 800х1200х144(мм). Навантаження: до 2500кг. Маркування:
         знаками EUR і відмітками IPPC`,
   },
   {
+    id: "3",
     title: "Європіддон б/в 1-й сорт, дерев’яний, світлий.",
     desc: `Розміри: 800х1200х144(мм). Навантаження: до 2500кг. Маркування:
         знаками EUR і відмітками IPPC`,
   },
   {
+    id: "4",
     title: "Європіддон б/в 1-й сорт, дерев’яний, світлий.",
     desc: `Розміри: 800х1200х144(мм). Навантаження: до 2500кг. Маркування:
         знаками EUR і відмітками IPPC`,
   },
   {
+    id: "5",
     title: "Європіддон б/в 1-й сорт, дерев’яний, світлий.",
     desc: `Розміри: 800х1200х144(мм). Навантаження: до 2500кг. Маркування:
         знаками EUR і відмітками IPPC`,
   },
   {
+    id: "6",
     title: "Європіддон б/в 1-й сорт, дерев’яний, світлий.",
     desc: `Розміри: 800х1200х144(мм). Навантаження: до 2500кг. Маркування:
         знаками EUR і відмітками IPPC`,
@@ -91,6 +99,41 @@ const Home = () => {
   const [testTab, setTestTab] = useState(true);
 
   const router = useNavigation();
+
+  const addBasketItem = async (id) => {
+    const findCatalog = catalogData.find((item) => item.id === id);
+    if (!findCatalog) return;
+
+    const requestBasket = await AsyncStorage.getItem("basket");
+
+    if (!requestBasket || JSON.parse(requestBasket).length === 0) {
+      await AsyncStorage.setItem(
+        "basket",
+        JSON.stringify([{ ...findCatalog, score: 1 }])
+      );
+      return;
+    }
+
+    const basket = JSON.parse(requestBasket);
+    const basketCurrent = basket.find((item) => item.id === id);
+
+    if (!basketCurrent) {
+      await AsyncStorage.setItem(
+        "basket",
+        JSON.stringify([...basket, { ...findCatalog, score: 1 }])
+      );
+      return;
+    } else {
+      await AsyncStorage.setItem(
+        "basket",
+        JSON.stringify([
+          ...basket.filter((item) => item.id !== basketCurrent.id),
+          { ...basketCurrent, score: basketCurrent.score + 1 },
+        ])
+      );
+      return;
+    }
+  };
   return (
     <>
       <View style={styles.home}>
@@ -141,7 +184,7 @@ const Home = () => {
             </Swiper>
           </View>
 
-          <View style={styles.grey}>
+          <View>
             <View style={styles.tabs}>
               <TouchableOpacity
                 style={styles.tabsItem(testTab)}
@@ -178,17 +221,20 @@ const Home = () => {
           </View>
 
           <View style={styles.catalogContainer}>
-            {catalogData.map((item, index) => (
+            {catalogData.map((item) => (
               <TouchableOpacity
                 onPress={() => router.navigate("catalog-item", { test: "2" })}
-                key={index}
+                key={item.id}
                 style={styles.catalogItem}
               >
                 <Image source={catalog} style={styles.catalogImg} />
                 <View style={styles.catalogContent}>
                   <Text style={styles.catalogTitle}>{item.title}</Text>
                   <Text style={styles.catalogDesc}>{item.desc}</Text>
-                  <TouchableOpacity style={styles.catalogBasket}>
+                  <TouchableOpacity
+                    onPress={() => addBasketItem(item.id)}
+                    style={styles.catalogBasket}
+                  >
                     <CatalogPlus />
                   </TouchableOpacity>
                 </View>
@@ -198,7 +244,7 @@ const Home = () => {
         </ScrollView>
       </View>
       <Navigation active="home" />
-      <StatusBar barStyle="dark-content" />
+      <StatusBar style="light" />
     </>
   );
 };

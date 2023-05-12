@@ -1,9 +1,22 @@
 import { View, Text, TouchableOpacity } from "react-native";
 import MenuIcons from "../assets/Icons/MenuIcons";
 import { useNavigation } from "@react-navigation/native";
+import { useEffect, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const Navigation = ({ active = "" }) => {
+const Navigation = ({ active = "", scoreBasket = 0 }) => {
   const navigation = useNavigation();
+  const [basketScore, setBasketScore] = useState(0);
+
+  useEffect(() => {
+    if (active === "shop") {
+      AsyncStorage.getItem("basket").then((value) => {
+        if (!value) return;
+        const result = JSON.parse(value);
+        setBasketScore(result.length);
+      });
+    }
+  }, []);
   return (
     <View
       style={{
@@ -90,31 +103,35 @@ const Navigation = ({ active = "" }) => {
         >
           <View style={{ height: 25, position: "relation" }}>
             <MenuIcons id="shop" active={active === "shop" ? true : false} />
-            <View
-              style={{
-                display: active === "shop" ? "" : "none",
-                position: "absolute",
-                top: -5,
-                right: -30,
-                borderColor: "#F40000",
-                borderWidth: 1,
-                borderRadius: 10,
-                zIndex: 2,
-                backgroundColor: "#ffffff",
-                paddingHorizontal: 4,
-              }}
-            >
-              <Text
+            {scoreBasket !== 0 ? (
+              <View
                 style={{
-                  fontSize: 11,
-                  lineHeight: 16,
-                  fontWeight: "500",
-                  color: "#F40000",
+                  display: active === "shop" ? "" : "none",
+                  position: "absolute",
+                  top: -5,
+                  right: -15,
+                  borderColor: "#F40000",
+                  borderWidth: 1,
+                  borderRadius: 10,
+                  zIndex: 2,
+                  backgroundColor: "#ffffff",
+                  paddingHorizontal: 4,
                 }}
               >
-                1050
-              </Text>
-            </View>
+                <Text
+                  style={{
+                    fontSize: 11,
+                    lineHeight: 16,
+                    fontWeight: "500",
+                    color: "#F40000",
+                  }}
+                >
+                  {scoreBasket}
+                </Text>
+              </View>
+            ) : (
+              <></>
+            )}
           </View>
           <Text
             style={{

@@ -7,6 +7,7 @@ import CatalogItemImg from "../assets/catalog-item.png";
 import Navigation from "../components/Navigation";
 import ShopIcon from "../assets/Icons/ShopIcon";
 import { useNavigation, useRoute } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const images = [
   CatalogItemImg,
@@ -21,6 +22,39 @@ const CatalogItem = () => {
   const router = useRoute();
 
   console.log(router.params);
+
+  const addBasketItem = async () => {
+    // const findCatalog = catalogData.find((item) => item.id === id);
+    // if (!findCatalog) return;
+
+    const basket = await AsyncStorage.getItem("basket");
+    if (!basket) {
+      AsyncStorage.setItem(
+        "basket",
+        JSON.stringify([
+          {
+            id: "1",
+            title: "Європіддон б/в 1-й сорт, дерев’яний, світлий.",
+            desc: `Розміри: 800х1200х144(мм). Навантаження: до 2500кг. Маркування:
+            знаками EUR і відмітками IPPC`,
+          },
+        ])
+      );
+      return;
+    }
+
+    const result = [
+      ...JSON.parse(basket),
+      {
+        id: "1",
+        title: "Європіддон б/в 1-й сорт, дерев’яний, світлий.",
+        desc: `Розміри: 800х1200х144(мм). Навантаження: до 2500кг. Маркування:
+      знаками EUR і відмітками IPPC`,
+      },
+    ];
+
+    AsyncStorage.setItem("basket", JSON.stringify(result));
+  };
   return (
     <>
       <View style={styles.catalog}>
@@ -65,7 +99,10 @@ const CatalogItem = () => {
             </View>
           </View>
 
-          <TouchableOpacity style={styles.basketGo}>
+          <TouchableOpacity
+            style={styles.basketGo}
+            onPress={() => addBasketItem()}
+          >
             <ShopIcon />
             <Text style={styles.basketGoText}>Додати в кошик</Text>
           </TouchableOpacity>

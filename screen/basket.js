@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   ScrollView,
   TextInput,
+  StatusBar,
 } from "react-native";
 import Navigation from "../components/Navigation";
 import catalog from "../assets/catalog.png";
@@ -12,36 +13,33 @@ import CloseBasket from "../assets/Icons/CloseBasket";
 import { useNavigation } from "@react-navigation/native";
 import styles from "../style/basket";
 import BasketNull from "../assets/Icons/BasketNull";
-
-const catalogData = [
-  {
-    title: "Європіддон б/в 1-й сорт, дерев’яний, світлий.",
-    desc: `Розміри: 800х1200х144(мм). Навантаження: до 2500кг. Маркування: знаками EUR і відмітками IPPC`,
-  },
-  {
-    title: "Європіддон б/в 1-й сорт, дерев’яний, світлий.",
-    desc: `Розміри: 800х1200х144(мм). Навантаження: до 2500кг. Маркування: знаками EUR і відмітками IPPC`,
-  },
-  {
-    title: "Європіддон б/в 1-й сорт, дерев’яний, світлий.",
-    desc: `Розміри: 800х1200х144(мм). Навантаження: до 2500кг. Маркування: знаками EUR і відмітками IPPC`,
-  },
-  {
-    title: "Європіддон б/в 1-й сорт, дерев’яний, світлий.",
-    desc: `Розміри: 800х1200х144(мм). Навантаження: до 2500кг. Маркування: знаками EUR і відмітками IPPC`,
-  },
-  {
-    title: "Європіддон б/в 1-й сорт, дерев’яний, світлий.",
-    desc: `Розміри: 800х1200х144(мм). Навантаження: до 2500кг. Маркування: знаками EUR і відмітками IPPC`,
-  },
-  {
-    title: "Європіддон б/в 1-й сорт, дерев’яний, світлий.",
-    desc: `Розміри: 800х1200х144(мм). Навантаження: до 2500кг. Маркування: знаками EUR і відмітками IPPC`,
-  },
-];
+import { useEffect, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Basket = () => {
   const navigation = useNavigation();
+  const [basketData, setBasketData] = useState([]);
+
+  useEffect(() => {
+    AsyncStorage.getItem("basket").then((value) => {
+      if (!value) return;
+      const result = JSON.parse(value);
+      console.log(result);
+      setBasketData(result);
+    });
+  }, []);
+
+  const deleteBasket = async (id) => {
+    const basket = await AsyncStorage.getItem("basket");
+    const list = JSON.parse(basket);
+
+    const result = list.filter((item) => item.id !== id);
+
+    await AsyncStorage.setItem("basket", JSON.stringify(result));
+
+    setBasketData(result);
+  };
+
   return (
     <>
       <View style={styles.basket}>
@@ -53,10 +51,10 @@ const Basket = () => {
           contentContainerStyle={styles.scrollView}
           showsVerticalScrollIndicator={false}
         >
-          {catalogData.length === 0 ? (
+          {basketData.length !== 0 ? (
             <>
               <View style={styles.basketList}>
-                {catalogData.map((item, index) => (
+                {basketData.map((item, index) => (
                   <View key={index} style={styles.basketItem}>
                     <Image source={catalog} style={styles.basketImage} />
                     <View style={styles.basketContent}>
@@ -67,7 +65,7 @@ const Basket = () => {
                       <View style={styles.basketContentBonus}>
                         <View style={styles.basketContentBonusBlock}>
                           <Text style={styles.basketContentBonusScore}>
-                            + 500{" "}
+                            + {String(item.score * 5)}{" "}
                           </Text>
                           <Text style={styles.basketContentBonusText}>
                             балів
@@ -75,11 +73,14 @@ const Basket = () => {
                         </View>
                         <TextInput
                           style={styles.basketContentBonusInput}
-                          value="100"
+                          value={String(item.score)}
                         />
                       </View>
                     </View>
-                    <TouchableOpacity style={styles.basketContentClose}>
+                    <TouchableOpacity
+                      style={styles.basketContentClose}
+                      onPress={() => deleteBasket(item.id)}
+                    >
                       <CloseBasket />
                     </TouchableOpacity>
                   </View>
@@ -104,14 +105,19 @@ const Basket = () => {
               </TouchableOpacity>
             </>
           ) : (
-            <View>
+            <View style={styles.basketNull}>
               <BasketNull />
+              <Text style={styles.basketNullTitle}>Кошик порожній</Text>
+              <Text
+                style={styles.basketNullDesc}
+              >{`Але це ніколи не пізно виправити :)`}</Text>
             </View>
           )}
         </ScrollView>
       </View>
 
-      <Navigation active="shop" />
+      <StatusBar barStyle="dark-content" />
+      <Navigation active="shop" scoreBasket={basketData.length} />
     </>
   );
 };

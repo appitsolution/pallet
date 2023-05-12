@@ -4,18 +4,14 @@ import normal from "../style/normal";
 const homeStyle = StyleSheet.create({
   home: {
     ...normal.containerTop,
+    backgroundColor: "#363636",
   },
   scrollViewContainer: {
     paddingBottom: 235,
   },
-  grey: {
-    backgroundColor: "#363636",
-
-  },
   banner: {
-    backgroundColor: "#363636",
     position: "relative",
-    paddingTop: 12,
+    marginTop: 12,
     height: "100%",
     maxHeight: 142,
     paddingHorizontal: 8,

@@ -152,6 +152,21 @@ const basketStyle = StyleSheet.create({
   },
   basketNull: {
     alignItems: "center",
+    marginTop: 30,
+  },
+  basketNullTitle: {
+    fontSize: 22,
+    lineHeight: 23,
+    fontWeight: "700",
+    marginTop: 30,
+    color: "#272727",
+  },
+  basketNullDesc: {
+    fontSize: 13,
+    lineHeight: 17,
+    fontWeight: "400",
+    marginTop: 6,
+    color: "rgba(244, 0, 0, 0.74)",
   },
 });
 
