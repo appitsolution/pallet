@@ -109,7 +109,7 @@ const Home = () => {
     if (!requestBasket || JSON.parse(requestBasket).length === 0) {
       await AsyncStorage.setItem(
         "basket",
-        JSON.stringify([{ ...findCatalog, score: 1 }])
+        JSON.stringify([{ ...findCatalog, score: "1" }])
       );
       return;
     }
@@ -120,7 +120,7 @@ const Home = () => {
     if (!basketCurrent) {
       await AsyncStorage.setItem(
         "basket",
-        JSON.stringify([...basket, { ...findCatalog, score: 1 }])
+        JSON.stringify([...basket, { ...findCatalog, score: "1" }])
       );
       return;
     } else {
@@ -128,7 +128,7 @@ const Home = () => {
         "basket",
         JSON.stringify([
           ...basket.filter((item) => item.id !== basketCurrent.id),
-          { ...basketCurrent, score: basketCurrent.score + 1 },
+          { ...basketCurrent, score: String(Number(basketCurrent.score) + 1) },
         ])
       );
       return;

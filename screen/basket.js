@@ -19,12 +19,12 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 const Basket = () => {
   const navigation = useNavigation();
   const [basketData, setBasketData] = useState([]);
+  const [test, setTest] = useState("");
 
   useEffect(() => {
     AsyncStorage.getItem("basket").then((value) => {
       if (!value) return;
       const result = JSON.parse(value);
-      console.log(result);
       setBasketData(result);
     });
   }, []);
@@ -38,6 +38,16 @@ const Basket = () => {
     await AsyncStorage.setItem("basket", JSON.stringify(result));
 
     setBasketData(result);
+  };
+
+  const changeInput = async (value, id) => {
+    const newValue = value.replace(/[^0-9]/g, "");
+    const newBasket = basketData.map((item) => {
+      if (item.id === id) return { ...item, score: newValue };
+      return item;
+    });
+    setBasketData(newBasket);
+    await AsyncStorage.setItem("basket", JSON.stringify(newBasket));
   };
 
   return (
@@ -65,15 +75,30 @@ const Basket = () => {
                       <View style={styles.basketContentBonus}>
                         <View style={styles.basketContentBonusBlock}>
                           <Text style={styles.basketContentBonusScore}>
-                            + {String(item.score * 5)}{" "}
+                            + {String(Number(item.score) * 5)}{" "}
                           </Text>
                           <Text style={styles.basketContentBonusText}>
                             балів
                           </Text>
                         </View>
                         <TextInput
+                          onChangeText={(value) => changeInput(value, item.id)}
                           style={styles.basketContentBonusInput}
                           value={String(item.score)}
+                          onBlur={async (event) => {
+                            if (event.nativeEvent.text === "") {
+                              const newBasket = basketData.map((el) => {
+                                if (el.id === item.id)
+                                  return { ...item, score: "1" };
+                                return item;
+                              });
+                              setBasketData(newBasket);
+                              await AsyncStorage.setItem(
+                                "basket",
+                                JSON.stringify(newBasket)
+                              );
+                            }
+                          }}
                         />
                       </View>
                     </View>
