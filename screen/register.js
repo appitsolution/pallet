@@ -11,6 +11,25 @@ import {
 const Register = () => {
   const [loginButtons, setLoginButtons] = useState(0);
   const navigation = useNavigation();
+
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const registerRequest = async () => {
+    if (!firstName || !lastName || !phone || !email || !password) return;
+    const result = await axios.post(`http://localhost:3000/auth/login`, {
+      firstName,
+      lastName,
+      phone,
+      email,
+      password,
+    });
+    alert(result.status);
+  };
+
   return (
     <>
       <View style={{ paddingTop: 50, width: "100%" }}>
@@ -109,6 +128,8 @@ const Register = () => {
                     borderWidth: 1.5,
                     borderRadius: 4,
                   }}
+                  value={firstName}
+                  onChangeText={(value) => setFirstName(value)}
                 />
               </View>
               <View style={{ position: "relative" }}>
@@ -136,6 +157,8 @@ const Register = () => {
                     borderWidth: 1.5,
                     borderRadius: 4,
                   }}
+                  value={lastName}
+                  onChangeText={(value) => setLastName(value)}
                 />
               </View>
               <View style={{ position: "relative" }}>
@@ -163,6 +186,9 @@ const Register = () => {
                     borderWidth: 1.5,
                     borderRadius: 4,
                   }}
+                  value={phone}
+                  keyboardType="number-pad"
+                  onChangeText={(value) => setPhone(value)}
                 />
               </View>
               <View style={{ position: "relative" }}>
@@ -190,6 +216,9 @@ const Register = () => {
                     borderWidth: 1.5,
                     borderRadius: 4,
                   }}
+                  value={email}
+                  keyboardType="email-address"
+                  onChangeText={(value) => setEmail(value)}
                 />
               </View>
               <View style={{ position: "relative" }}>
@@ -218,6 +247,9 @@ const Register = () => {
                     borderWidth: 1.5,
                     borderRadius: 4,
                   }}
+                  value={password}
+                  secureTextEntry
+                  onChangeText={(value) => setPassword(value)}
                 />
               </View>
 
@@ -265,6 +297,7 @@ const Register = () => {
                   shadowOpacity: 0.2,
                   shadowRadius: 4,
                 }}
+                onPress={registerRequest}
               >
                 <Text
                   style={{

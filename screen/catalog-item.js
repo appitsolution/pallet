@@ -7,6 +7,7 @@ import CatalogItemImg from "../assets/catalog-item.png";
 import Navigation from "../components/Navigation";
 import ShopIcon from "../assets/Icons/ShopIcon";
 import { useNavigation, useRoute } from "@react-navigation/native";
+import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const images = [
@@ -17,18 +18,17 @@ const images = [
   CatalogItemImg,
 ];
 
+const id = "1";
 const CatalogItem = () => {
   const navigation = useNavigation();
   const router = useRoute();
+  const [isBasket, setIsBasket] = useState(false);
 
   console.log(router.params);
 
   const addBasketItem = async () => {
-    // const findCatalog = catalogData.find((item) => item.id === id);
-    // if (!findCatalog) return;
-
     const basket = await AsyncStorage.getItem("basket");
-    if (!basket) {
+    if ((!basket === JSON.parse(basket).length) === 0) {
       AsyncStorage.setItem(
         "basket",
         JSON.stringify([
@@ -37,7 +37,7 @@ const CatalogItem = () => {
             title: "Європіддон б/в 1-й сорт, дерев’яний, світлий.",
             desc: `Розміри: 800х1200х144(мм). Навантаження: до 2500кг. Маркування:
             знаками EUR і відмітками IPPC`,
-            score: 1,
+            score: "1",
           },
         ])
       );
@@ -55,8 +55,36 @@ const CatalogItem = () => {
       },
     ];
 
-    AsyncStorage.setItem("basket", JSON.stringify(result));
+    await AsyncStorage.setItem("basket", JSON.stringify(result));
+    setIsBasket(true);
+    return;
   };
+
+  const deleteBasketItem = async () => {
+    const basket = await AsyncStorage.getItem("basket");
+    if (!basket) return;
+    if (JSON.parse(basket).length === 0) return;
+
+    const newBasket = JSON.parse(basket).filter((item) => item.id !== id);
+
+    console.log(newBasket);
+
+    await AsyncStorage.setItem("basket", JSON.stringify(newBasket));
+    setIsBasket(false);
+  };
+
+  useEffect(() => {
+    // console.log("ok");
+    AsyncStorage.getItem("basket").then((value) => {
+      if (!value) return setIsBasket(false);
+      if (JSON.parse(value).length === 0) return setIsBasket(false);
+
+      const result = JSON.parse(value).find((item) => item.id === "1");
+      if (!result) return setIsBasket(false);
+
+      setIsBasket(true);
+    });
+  });
   return (
     <>
       <View style={styles.catalog}>
@@ -100,14 +128,23 @@ const CatalogItem = () => {
               </Text>
             </View>
           </View>
-
-          <TouchableOpacity
-            style={styles.basketGo}
-            onPress={() => addBasketItem()}
-          >
-            <ShopIcon />
-            <Text style={styles.basketGoText}>Додати в кошик</Text>
-          </TouchableOpacity>
+          {isBasket ? (
+            <TouchableOpacity
+              style={styles.basketGo(true)}
+              onPress={() => deleteBasketItem()}
+            >
+              <ShopIcon />
+              <Text style={styles.basketGoText}>В кошику</Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              style={styles.basketGo()}
+              onPress={() => addBasketItem()}
+            >
+              <ShopIcon />
+              <Text style={styles.basketGoText}>Додати в кошик</Text>
+            </TouchableOpacity>
+          )}
         </View>
       </View>
       <Navigation />

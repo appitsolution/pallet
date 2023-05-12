@@ -1,10 +1,29 @@
 import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
-import { View, Text, TouchableOpacity, TextInput } from "react-native";
+import { View, Text, TouchableOpacity, TextInput, Alert } from "react-native";
+import axios from "axios";
 
 const Login = () => {
   const [loginButtons, setLoginButtons] = useState(0);
   const navigation = useNavigation();
+
+  const [login, setLogin] = useState("");
+  const [password, setPassword] = useState("");
+
+  const loginRequest = async () => {
+    if (!login || !password) return;
+    try {
+      const result = await axios.post(`http://192.168.0.103:3000/auth/login`, {
+        login,
+        password,
+      });
+      console.log(result);
+      Alert.alert("Login", "ok");
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <>
       <View style={{ paddingTop: 50, width: "100%" }}>
@@ -102,6 +121,9 @@ const Login = () => {
                 borderWidth: 1.5,
                 borderRadius: 4,
               }}
+              keyboardType="email-address"
+              value={login}
+              onChangeText={(value) => setLogin(value)}
             />
           </View>
           <View style={{ position: "relative" }}>
@@ -129,6 +151,9 @@ const Login = () => {
                 borderWidth: 1.5,
                 borderRadius: 4,
               }}
+              secureTextEntry
+              value={password}
+              onChangeText={(value) => setPassword(value)}
             />
           </View>
 
@@ -162,6 +187,7 @@ const Login = () => {
               shadowOpacity: 0.2,
               shadowRadius: 4,
             }}
+            onPress={loginRequest}
           >
             <Text
               style={{
