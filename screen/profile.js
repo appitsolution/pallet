@@ -4,49 +4,56 @@ import Logo from "../components/Logo";
 import Navigation from "../components/Navigation";
 import profileIcon from "../assets/profileTest.png";
 import ProfileIcons from "../assets/Icons/ProfileIcons.js";
-import { useNavigation } from "@react-navigation/native";
+import {
+  useIsFocused,
+  useNavigation,
+  useFocusEffect,
+} from "@react-navigation/native";
+import { useCallback, useEffect, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import useVerify from "../components/hook/useVerify";
 
 const menuData = [
   {
     title: "Мої замовлення",
     image: "order",
-    path: "profile/data",
+    path: "profile/order",
     important: false,
   },
   {
     title: "Сповіщення",
     image: "notification",
-    path: "",
+    path: "profile/notification",
     important: false,
   },
   {
     title: "Партнерська програма",
     image: "partner",
-    path: "",
+    path: "profile/partner",
     important: false,
   },
   {
     title: "Пропозиції від компанії",
     image: "offer",
-    path: "",
+    path: "profile/offer",
     important: false,
   },
   {
     title: "Бонусний рахунок",
     image: "bonus",
-    path: "",
+    path: "bonus",
     important: false,
   },
   {
     title: "Інформація",
     image: "info",
-    path: "",
+    path: "profile/info",
     important: false,
   },
   {
     title: "Переглянуті",
     image: "visibility",
-    path: "",
+    path: "profile/visibility",
     important: false,
   },
   {
@@ -62,16 +69,39 @@ const menuData = [
     path: "",
     important: true,
   },
-  {
-    title: "Вийти із акаунта",
-    image: "logout",
-    path: "",
-    important: false,
-  },
 ];
 
 const Profile = () => {
+  const isFocusScreen = useIsFocused();
   const navigation = useNavigation();
+  const [requestEffect, setRequestEffect] = useState(false);
+  const [data, setData] = useState({
+    _id: "",
+    birthday: "",
+    delivery: {
+      _id: "",
+      city: "",
+      house: "",
+      index: "",
+      region: "",
+      street: "",
+    },
+    email: "",
+    firstName: "",
+    lastName: "",
+    password: "",
+    phone: "",
+  });
+
+  const verifyFun = async () => {
+    const { verify, dataFetch } = await useVerify();
+    setData(dataFetch);
+  };
+
+  useEffect(() => {
+    verifyFun();
+  }, [isFocusScreen]);
+
   return (
     <>
       <View>
@@ -80,10 +110,16 @@ const Profile = () => {
         </View>
         <TouchableOpacity
           style={styles.info}
-          onPress={() => navigation.navigate("profile/data")}
+          onPress={() => {
+            setRequestEffect(false);
+            navigation.navigate("profile/data");
+          }}
         >
           <Image style={styles.infoImg} source={profileIcon} />
-          <Text style={styles.infoTitle}>Іванов Іван</Text>
+          <Text style={styles.infoTitle}>
+            {data.lastName !== "" ? data.lastName : ""}{" "}
+            {data.firstName !== "" ? data.firstName : ""}
+          </Text>
         </TouchableOpacity>
         <View style={styles.menu}>
           {menuData.map((item, index) => (
@@ -91,6 +127,10 @@ const Profile = () => {
               activeOpacity={0.5}
               style={styles.menuItem}
               key={index}
+              onPress={() => {
+                setRequestEffect(false);
+                navigation.navigate(item.path);
+              }}
             >
               <View style={styles.menuItemImg}>
                 <ProfileIcons name={item.image} />
@@ -106,6 +146,19 @@ const Profile = () => {
               </Text>
             </TouchableOpacity>
           ))}
+          <TouchableOpacity
+            activeOpacity={0.5}
+            style={styles.menuItem}
+            onPress={async () => {
+              await AsyncStorage.setItem("token", "");
+              navigation.navigate("home");
+            }}
+          >
+            <View style={styles.menuItemImg}>
+              <ProfileIcons name="logout" />
+            </View>
+            <Text style={styles.menuItemText}>Вийти із акаунта</Text>
+          </TouchableOpacity>
         </View>
       </View>
       <Navigation active="profile" />

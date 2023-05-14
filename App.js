@@ -1,7 +1,10 @@
 import { useEffect } from "react";
 import { StyleSheet, View, StatusBar } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
-import { createStackNavigator } from "@react-navigation/stack";
+import {
+  createStackNavigator,
+  CardStyleInterpolators,
+} from "@react-navigation/stack";
 import { useFonts } from "expo-font";
 import Home from "./screen/home";
 import CatalogItem from "./screen/catalog-item";
@@ -11,6 +14,19 @@ import Register from "./screen/register";
 import Sign from "./screen/sign";
 import Profile from "./screen/profile";
 import ProfileData from "./screen/profile/profile-data";
+import ProfileNotification from "./screen/profile/profile-notification";
+import ProfileOrder from "./screen/profile/profile-order";
+import ProfileOrderDetails from "./style/profile/profile-order-details";
+import ProfileVisibility from "./screen/profile/profile-visibility";
+import Bonus from "./screen/bonus";
+import ProfilePartner from "./screen/profile/profile-partner";
+import ProfileOffer from "./screen/profile/profile-offer";
+import ProfileOfferReferral from "./screen/profile/offer/referral";
+import ProfileOfferGift from "./screen/profile/offer/gift";
+import ProfileOfferCertificate from "./screen/profile/offer/certificate";
+import ProfileInfo from "./screen/profile/profile-info";
+import ProfileInfoAbout from "./screen/profile/info/about";
+import PrivateRouter from "./components/PrivateRouter";
 
 const Stack = createStackNavigator();
 
@@ -34,30 +50,33 @@ export default function App() {
             backgroundColor: "#ffffff",
           },
         }}
-        initialRouteName="profile/data"
+        initialRouteName="home"
       >
         <Stack.Screen
           name="home"
           component={Home}
           options={{
-            animationEnabled: false,
+            animationEnabled: true,
             headerShown: false,
+            cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
           }}
         />
         <Stack.Screen
           name="catalog-item"
           component={CatalogItem}
           options={{
-            animationEnabled: false,
+            animationEnabled: true,
             headerShown: false,
+            cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
           }}
         />
         <Stack.Screen
           name="basket"
           component={Basket}
           options={{
-            animationEnabled: false,
+            animationEnabled: true,
             headerShown: false,
+            cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
           }}
         />
 
@@ -85,24 +104,135 @@ export default function App() {
             headerShown: false,
           }}
         />
+
+        <Stack.Screen
+          name="bonus"
+          component={Bonus}
+          options={{
+            animationEnabled: true,
+            headerShown: false,
+            cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS,
+          }}
+        />
+
         <Stack.Screen
           name="profile"
           component={Profile}
           options={{
-            animationEnabled: false,
+            animationEnabled: true,
             headerShown: false,
+            cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
           }}
         />
         <Stack.Screen
           name="profile/data"
           component={ProfileData}
           options={{
-            animationEnabled: false,
+            animationEnabled: true,
             headerShown: false,
+            cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+          }}
+        />
+        <Stack.Screen
+          name="profile/order"
+          component={ProfileOrder}
+          options={{
+            animationEnabled: true,
+            headerShown: false,
+            cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+          }}
+        />
+        <Stack.Screen
+          name="profile/order/details"
+          component={ProfileOrderDetails}
+          options={{
+            animationEnabled: true,
+            headerShown: false,
+            cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+          }}
+        />
+        <Stack.Screen
+          name="profile/notification"
+          component={ProfileNotification}
+          options={{
+            animationEnabled: true,
+            headerShown: false,
+            cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+          }}
+        />
+        <Stack.Screen
+          name="profile/partner"
+          component={ProfilePartner}
+          options={{
+            animationEnabled: true,
+            headerShown: false,
+            cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+          }}
+        />
+        <Stack.Screen
+          name="profile/offer"
+          component={ProfileOffer}
+          options={{
+            animationEnabled: true,
+            headerShown: false,
+            cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+          }}
+        />
+        <Stack.Screen
+          name="profile/offer/referral"
+          component={ProfileOfferReferral}
+          options={{
+            animationEnabled: true,
+            headerShown: false,
+            cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+          }}
+        />
+        <Stack.Screen
+          name="profile/offer/gift"
+          component={ProfileOfferGift}
+          options={{
+            animationEnabled: true,
+            headerShown: false,
+            cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+          }}
+        />
+        <Stack.Screen
+          name="profile/offer/certificate"
+          component={ProfileOfferCertificate}
+          options={{
+            animationEnabled: true,
+            headerShown: false,
+            cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+          }}
+        />
+        <Stack.Screen
+          name="profile/visibility"
+          component={ProfileVisibility}
+          options={{
+            animationEnabled: true,
+            headerShown: false,
+            cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+          }}
+        />
+        <Stack.Screen
+          name="profile/info"
+          component={ProfileInfo}
+          options={{
+            animationEnabled: true,
+            headerShown: false,
+            cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+          }}
+        />
+        <Stack.Screen
+          name="profile/info/about"
+          component={ProfileInfoAbout}
+          options={{
+            animationEnabled: true,
+            headerShown: false,
+            cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
           }}
         />
       </Stack.Navigator>
-      <StatusBar barStyle="default" />
     </NavigationContainer>
   );
 }

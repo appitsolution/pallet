@@ -2,6 +2,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
 import { View, Text, TouchableOpacity, TextInput, Alert } from "react-native";
 import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Login = () => {
   const [loginButtons, setLoginButtons] = useState(0);
@@ -17,7 +18,11 @@ const Login = () => {
         login,
         password,
       });
-      Alert.alert("Login", "ok");
+      if (result.data.status === "ok") {
+        // console.log(result.data);
+        await AsyncStorage.setItem("token", result.data.token);
+        navigation.navigate("profile");
+      }
     } catch (err) {
       console.log(err);
     }

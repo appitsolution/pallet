@@ -3,6 +3,7 @@ import MenuIcons from "../assets/Icons/MenuIcons";
 import { useNavigation } from "@react-navigation/native";
 import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import useVerify from "./hook/useVerify";
 
 const Navigation = ({ active = "", scoreBasket = 0 }) => {
   const navigation = useNavigation();
@@ -17,6 +18,17 @@ const Navigation = ({ active = "", scoreBasket = 0 }) => {
       });
     }
   }, []);
+
+  const verifyFun = async (path) => {
+    const { verify, dataFetch } = await useVerify();
+
+    if (verify) {
+      return navigation.navigate(path);
+    } else {
+      return navigation.navigate("login");
+    }
+  };
+
   return (
     <View
       style={{
@@ -82,7 +94,10 @@ const Navigation = ({ active = "", scoreBasket = 0 }) => {
             Головна
           </Text>
         </TouchableOpacity>
-        <TouchableOpacity style={{ width: "25%", alignItems: "center" }}>
+        <TouchableOpacity
+          style={{ width: "25%", alignItems: "center" }}
+          onPress={() => navigation.navigate("bonus")}
+        >
           <View style={{ height: 25 }}>
             <MenuIcons id="bonus" active={active === "bonus" ? true : false} />
           </View>
@@ -146,7 +161,9 @@ const Navigation = ({ active = "", scoreBasket = 0 }) => {
         </TouchableOpacity>
         <TouchableOpacity
           style={{ width: "25%", alignItems: "center" }}
-          onPress={() => navigation.navigate("profile")}
+          onPress={() => {
+            verifyFun("profile");
+          }}
         >
           <View style={{ height: 25 }}>
             <MenuIcons

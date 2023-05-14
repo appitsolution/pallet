@@ -6,7 +6,10 @@ import {
   TouchableOpacity,
   TextInput,
   ScrollView,
+  Alert,
 } from "react-native";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Register = () => {
   const [loginButtons, setLoginButtons] = useState(0);
@@ -20,14 +23,23 @@ const Register = () => {
 
   const registerRequest = async () => {
     if (!firstName || !lastName || !phone || !email || !password) return;
-    const result = await axios.post(`http://localhost:3000/auth/login`, {
+    const result = await axios.post(`http://192.168.0.103:3000/auth/register`, {
       firstName,
       lastName,
       phone,
       email,
       password,
     });
-    alert(result.status);
+    if (result.data.status !== "ok") {
+      return Alert.alert("Error", result.data.status);
+    }
+    const token = await axios.post("http://192.168.0.103:3000/auth/login", {
+      login: email,
+      password: password,
+    });
+
+    AsyncStorage.setItem("token", token.data.token);
+    navigation.navigate("profile");
   };
 
   return (

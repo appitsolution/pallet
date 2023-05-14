@@ -10,9 +10,22 @@ const profileDataStyle = StyleSheet.create({
     fontSize: 22,
     fontWeight: "600",
   },
+  positionWrapper: (active = false) => {
+    return {
+      display: active ? "flex" : "none",
+      position: "absolute",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+      backgroundColor: "#ffffff",
+      zIndex: 3,
+    };
+  },
   data: {
     marginTop: 30,
   },
+
   dataButton: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -49,6 +62,42 @@ const profileDataStyle = StyleSheet.create({
   },
   address: {
     marginTop: 15,
+  },
+  saveButton: {
+    paddingVertical: 16,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 4,
+    marginTop: 10,
+
+    backgroundColor: "#272727",
+    elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.14,
+    shadowRadius: 5,
+    elevation: 1,
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.12,
+    shadowRadius: 10,
+    elevation: 2,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+  },
+  saveButtonText: {
+    color: "white",
+    fontSize: 14,
+    fontWeight: "500",
   },
   changePassword: {
     justifyContent: "center",
