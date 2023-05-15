@@ -3,6 +3,7 @@ import { useState } from "react";
 import { View, Text, TouchableOpacity, TextInput, Alert } from "react-native";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { SERVER } from "@env";
 
 const Login = () => {
   const [loginButtons, setLoginButtons] = useState(0);
@@ -14,7 +15,7 @@ const Login = () => {
   const loginRequest = async () => {
     if (!login || !password) return;
     try {
-      const result = await axios.post(`http://192.168.0.103:3000/auth/login`, {
+      const result = await axios.post(`${SERVER}/auth/login`, {
         login,
         password,
       });

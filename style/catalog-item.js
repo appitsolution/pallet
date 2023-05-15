@@ -24,6 +24,7 @@ const catalogItemStyle = StyleSheet.create({
   },
   sliderItem: {
     width: "100%",
+    height: "100%",
   },
   catalogTitle: {
     fontSize: 16,

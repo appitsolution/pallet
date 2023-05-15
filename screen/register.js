@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { SERVER } from "@env";
 
 const Register = () => {
   const [loginButtons, setLoginButtons] = useState(0);
@@ -23,7 +24,7 @@ const Register = () => {
 
   const registerRequest = async () => {
     if (!firstName || !lastName || !phone || !email || !password) return;
-    const result = await axios.post(`http://192.168.0.103:3000/auth/register`, {
+    const result = await axios.post(`${SERVER}/auth/register`, {
       firstName,
       lastName,
       phone,
@@ -33,7 +34,7 @@ const Register = () => {
     if (result.data.status !== "ok") {
       return Alert.alert("Error", result.data.status);
     }
-    const token = await axios.post("http://192.168.0.103:3000/auth/login", {
+    const token = await axios.post(`${SERVER}/auth/login`, {
       login: email,
       password: password,
     });

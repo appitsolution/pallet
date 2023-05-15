@@ -17,6 +17,7 @@ import ChangeIcon from "../../assets/Icons/ChangeIcon";
 import ChangePassword from "../../components/profile/ChangePassword";
 import ProfileDataComponent from "../../components/profile/ProfileData";
 import useVerify from "../../components/hook/useVerify";
+import {SERVER} from "@env"
 
 const ProfileData = () => {
   const [isShowPassModal, setIsShowPassModal] = useState(false);
@@ -83,7 +84,7 @@ const ProfileData = () => {
 
   const changeData = async () => {
     try {
-      await axios.post("http://192.168.0.103:3000/auth/change/data", {
+      await axios.post(`${SERVER}/auth/change/data`, {
         ...dataInput,
         id: data._id,
       });
@@ -96,7 +97,7 @@ const ProfileData = () => {
 
   const changeDelivery = async () => {
     try {
-      await axios.post("http://192.168.0.103:3000/auth/change/delivery", {
+      await axios.post(`${SERVER}/auth/change/delivery`, {
         ...deliveryInput,
         id: data._id,
       });
@@ -110,7 +111,7 @@ const ProfileData = () => {
 
   const changePassword = (value) => {
     try {
-      axios.post("http://192.168.0.103:3000/auth/change/password", {
+      axios.post(`${SERVER}/auth/change/password`, {
         id: data._id,
         currentPassword: value.currentPassword,
         newPassword: value.newPassword,

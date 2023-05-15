@@ -1,4 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { SERVER } from "@env";
 
 import axios from "axios";
 
@@ -11,7 +12,7 @@ const useVerify = async () => {
     };
   }
 
-  const result = await axios.post("http://192.168.0.103:3000/auth/verify", {
+  const result = await axios.post(`${SERVER}/auth/verify`, {
     token: token,
   });
 

@@ -15,6 +15,7 @@ import styles from "../style/basket";
 import BasketNull from "../assets/Icons/BasketNull";
 import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { SERVER_ADMIN } from "@env";
 
 const Basket = () => {
   const navigation = useNavigation();
@@ -66,12 +67,16 @@ const Basket = () => {
               <View style={styles.basketList}>
                 {basketData.map((item, index) => (
                   <View key={index} style={styles.basketItem}>
-                    <Image source={catalog} style={styles.basketImage} />
+                    <Image
+                      source={{
+                        uri: `${SERVER_ADMIN}/media/${item.images[0].catalog.filename}`,
+                      }}
+                      resizeMode="center"
+                      style={styles.basketImage}
+                    />
                     <View style={styles.basketContent}>
-                      <Text style={styles.basketContentTitle}>
-                        {item.title}
-                      </Text>
-                      <Text style={styles.basketContentDesc}>{item.desc}</Text>
+                      <Text style={styles.basketContentTitle}>{item.name}</Text>
+                      <Text style={styles.basketContentDesc}>{item.span}</Text>
                       <View style={styles.basketContentBonus}>
                         <View style={styles.basketContentBonusBlock}>
                           <Text style={styles.basketContentBonusScore}>

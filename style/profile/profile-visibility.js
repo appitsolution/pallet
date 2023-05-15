@@ -19,6 +19,7 @@ const profileOrderStyle = StyleSheet.create({
     gap: 16,
     backgroundColor: "#ffffff",
     paddingHorizontal: 8,
+    paddingBottom: 20,
   },
   catalogItem: {
     backgroundColor: "#FFFFFF",

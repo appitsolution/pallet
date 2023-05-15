@@ -9,11 +9,11 @@ import {
 } from "react-native";
 import Logo from "../components/Logo";
 import Swiper from "react-native-swiper";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import catalog from "../assets/catalog.png";
 import CatalogPlus from "../assets/Icons/CatalogPlus";
 import Navigation from "../components/Navigation";
-import { useNavigation } from "@react-navigation/native";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import styles from "../style/homeStyle";
 import slide1 from "../assets/images/slider/slide-1.jpg";
@@ -21,8 +21,9 @@ import slide2 from "../assets/images/slider/slide-2.jpg";
 import slide3 from "../assets/images/slider/slide-3.jpg";
 import slide4 from "../assets/images/slider/slide-4.jpg";
 import bonus from "../assets/images/slider/bonus.jpg";
-
 import { StatusBar } from "expo-status-bar";
+import axios from "axios";
+import { SERVER_ADMIN } from "@env";
 
 const slideData = [
   {
@@ -56,47 +57,11 @@ const sortButtons = [
   { text: "Пластикові", active: false },
 ];
 
-const catalogData = [
-  {
-    id: "1",
-    title: "Європіддон б/в 1-й сорт, дерев’яний, світлий.",
-    desc: `Розміри: 800х1200х144(мм). Навантаження: до 2500кг. Маркування:
-        знаками EUR і відмітками IPPC`,
-  },
-  {
-    id: "2",
-    title: "Європіддон б/в 1-й сорт, дерев’яний, світлий.",
-    desc: `Розміри: 800х1200х144(мм). Навантаження: до 2500кг. Маркування:
-        знаками EUR і відмітками IPPC`,
-  },
-  {
-    id: "3",
-    title: "Європіддон б/в 1-й сорт, дерев’яний, світлий.",
-    desc: `Розміри: 800х1200х144(мм). Навантаження: до 2500кг. Маркування:
-        знаками EUR і відмітками IPPC`,
-  },
-  {
-    id: "4",
-    title: "Європіддон б/в 1-й сорт, дерев’яний, світлий.",
-    desc: `Розміри: 800х1200х144(мм). Навантаження: до 2500кг. Маркування:
-        знаками EUR і відмітками IPPC`,
-  },
-  {
-    id: "5",
-    title: "Європіддон б/в 1-й сорт, дерев’яний, світлий.",
-    desc: `Розміри: 800х1200х144(мм). Навантаження: до 2500кг. Маркування:
-        знаками EUR і відмітками IPPC`,
-  },
-  {
-    id: "6",
-    title: "Європіддон б/в 1-й сорт, дерев’яний, світлий.",
-    desc: `Розміри: 800х1200х144(мм). Навантаження: до 2500кг. Маркування:
-        знаками EUR і відмітками IPPC`,
-  },
-];
-
 const Home = () => {
   const [testTab, setTestTab] = useState(true);
+  const isFocusedScreen = useIsFocused();
+
+  const [catalogData, setCatalogData] = useState([]);
 
   const router = useNavigation();
 
@@ -134,6 +99,22 @@ const Home = () => {
       return;
     }
   };
+
+  const requestCatalog = async () => {
+    try {
+      const getCatalog = await axios.get(`${SERVER_ADMIN}/api/products`);
+      setCatalogData(getCatalog.data.docs);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    if (isFocusedScreen) {
+      requestCatalog();
+    }
+  }, [isFocusedScreen]);
+
   return (
     <>
       <View style={styles.home}>
@@ -223,14 +204,28 @@ const Home = () => {
           <View style={styles.catalogContainer}>
             {catalogData.map((item) => (
               <TouchableOpacity
-                onPress={() => router.navigate("catalog-item", { test: "2" })}
+                onPress={() => router.navigate("catalog-item", { id: item.id })}
                 key={item.id}
                 style={styles.catalogItem}
               >
-                <Image source={catalog} style={styles.catalogImg} />
+                <View style={styles.catalogImage}>
+                  <Image
+                    source={{
+                      uri: `${SERVER_ADMIN}/media/${item.images[0].catalog.filename}`,
+                    }}
+                    style={styles.catalogImg}
+                    resizeMode="center"
+                  />
+                </View>
                 <View style={styles.catalogContent}>
-                  <Text style={styles.catalogTitle}>{item.title}</Text>
-                  <Text style={styles.catalogDesc}>{item.desc}</Text>
+                  <Text style={styles.catalogTitle}>{item.name}</Text>
+                  <Text style={styles.catalogDesc}>
+                    Розміри: {item.size}(мм).
+                  </Text>
+                  <Text style={styles.catalogDesc}>
+                    Навантаження: до {item.upload}кг.
+                  </Text>
+
                   <TouchableOpacity
                     onPress={() => addBasketItem(item.id)}
                     style={styles.catalogBasket}

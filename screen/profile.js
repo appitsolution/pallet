@@ -1,4 +1,11 @@
-import { View, Text, Image, StatusBar, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  StatusBar,
+  TouchableOpacity,
+  RefreshControl,
+} from "react-native";
 import styles from "../style/profile";
 import Logo from "../components/Logo";
 import Navigation from "../components/Navigation";
@@ -12,6 +19,7 @@ import {
 import { useCallback, useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import useVerify from "../components/hook/useVerify";
+import { ScrollView } from "react-native";
 
 const menuData = [
   {
@@ -73,6 +81,7 @@ const menuData = [
 
 const Profile = () => {
   const isFocusScreen = useIsFocused();
+  const [refresh, setRefresh] = useState(false);
   const navigation = useNavigation();
   const [requestEffect, setRequestEffect] = useState(false);
   const [data, setData] = useState({
@@ -94,7 +103,9 @@ const Profile = () => {
   });
 
   const verifyFun = async () => {
+    setRefresh(true);
     const { verify, dataFetch } = await useVerify();
+    setRefresh(false);
     setData(dataFetch);
   };
 
@@ -104,7 +115,11 @@ const Profile = () => {
 
   return (
     <>
-      <View>
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refresh} onRefresh={verifyFun} />
+        }
+      >
         <View style={styles.logo}>
           <Logo />
         </View>
@@ -160,7 +175,7 @@ const Profile = () => {
             <Text style={styles.menuItemText}>Вийти із акаунта</Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </ScrollView>
       <Navigation active="profile" />
       <StatusBar barStyle="dark-content" />
     </>

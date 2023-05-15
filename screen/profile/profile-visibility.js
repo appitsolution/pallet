@@ -2,10 +2,12 @@ import { View, Text, TouchableOpacity, Image, ScrollView } from "react-native";
 import Navigation from "../../components/Navigation";
 import { StatusBar } from "react-native";
 import styles from "../../style/profile/profile-visibility";
-import { useNavigation } from "@react-navigation/native";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
 import BackCatalog from "../../assets/Icons/BackCatalog";
 import catalog from "../../assets/catalog.png";
 import CatalogPlus from "../../assets/Icons/CatalogPlus";
+import { useEffect, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const catalogData = [
   {
@@ -47,7 +49,20 @@ const catalogData = [
 ];
 
 const ProfileVisibility = () => {
+  const isFocusScreen = useIsFocused();
   const navigation = useNavigation();
+  const [visibilityData, setVisibilityData] = useState([]);
+
+  const requestHistory = async () => {
+    const getHistory = await AsyncStorage.getItem("catalogHistory");
+
+    if (!getHistory) return setVisibilityData([]);
+
+    return setVisibilityData(JSON.parse(getHistory));
+  };
+  useEffect(() => {
+    requestHistory();
+  }, [isFocusScreen]);
   return (
     <>
       <View style={{ paddingBottom: 200 }}>
@@ -64,27 +79,33 @@ const ProfileVisibility = () => {
 
         <ScrollView>
           <View style={styles.catalogContainer}>
-            {catalogData.map((item) => (
-              <TouchableOpacity
-                onPress={() =>
-                  navigation.navigate("catalog-item", { test: "2" })
-                }
-                key={item.id}
-                style={styles.catalogItem}
-              >
-                <Image source={catalog} style={styles.catalogImg} />
-                <View style={styles.catalogContent}>
-                  <Text style={styles.catalogTitle}>{item.title}</Text>
-                  <Text style={styles.catalogDesc}>{item.desc}</Text>
+            {visibilityData.length === 0 ? (
+              <></>
+            ) : (
+              <>
+                {visibilityData.map((item, index) => (
                   <TouchableOpacity
-                    onPress={() => addBasketItem(item.id)}
-                    style={styles.catalogBasket}
+                    onPress={() =>
+                      navigation.navigate("catalog-item", { test: "2" })
+                    }
+                    key={index}
+                    style={styles.catalogItem}
                   >
-                    <CatalogPlus />
+                    <Image source={catalog} style={styles.catalogImg} />
+                    <View style={styles.catalogContent}>
+                      <Text style={styles.catalogTitle}>{item.title}</Text>
+                      <Text style={styles.catalogDesc}>{item.desc}</Text>
+                      <TouchableOpacity
+                        onPress={() => addBasketItem(item.id)}
+                        style={styles.catalogBasket}
+                      >
+                        <CatalogPlus />
+                      </TouchableOpacity>
+                    </View>
                   </TouchableOpacity>
-                </View>
-              </TouchableOpacity>
-            ))}
+                ))}
+              </>
+            )}
           </View>
         </ScrollView>
       </View>

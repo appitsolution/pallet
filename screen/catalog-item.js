@@ -6,25 +6,62 @@ import styles from "../style/catalog-item";
 import CatalogItemImg from "../assets/catalog-item.png";
 import Navigation from "../components/Navigation";
 import ShopIcon from "../assets/Icons/ShopIcon";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import {
+  useIsFocused,
+  useNavigation,
+  useRoute,
+} from "@react-navigation/native";
 import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
+import { SERVER_ADMIN } from "@env";
 
-const images = [
-  CatalogItemImg,
-  CatalogItemImg,
-  CatalogItemImg,
-  CatalogItemImg,
-  CatalogItemImg,
-];
-
-const id = "1";
 const CatalogItem = () => {
+  const isFocusScreen = useIsFocused();
   const navigation = useNavigation();
   const router = useRoute();
   const [isBasket, setIsBasket] = useState(false);
+  const [catalogData, setCatalogData] = useState({});
 
   console.log(router.params);
+
+  const addHistory = async () => {
+    const getHistory = await AsyncStorage.getItem("catalogHistory");
+
+    if (!getHistory) {
+      await AsyncStorage.setItem(
+        "catalogHistory",
+        JSON.stringify([catalogData])
+      );
+      return;
+    } else {
+      await AsyncStorage.setItem(
+        "catalogHistory",
+        JSON.stringify([...JSON.parse(getHistory), catalogData])
+      );
+
+      return;
+    }
+  };
+
+  const requestCatalog = async () => {
+    try {
+      const getCatalog = await axios.get(
+        `${SERVER_ADMIN}/api/products/${router.params.id}`
+      );
+      console.log(getCatalog.data.images);
+      setCatalogData(getCatalog.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    if (isFocusScreen) {
+      addHistory();
+      requestCatalog();
+    }
+  }, [isFocusScreen]);
 
   const addBasketItem = async () => {
     const basket = await AsyncStorage.getItem("basket");
@@ -33,10 +70,7 @@ const CatalogItem = () => {
         "basket",
         JSON.stringify([
           {
-            id: "1",
-            title: "Європіддон б/в 1-й сорт, дерев’яний, світлий.",
-            desc: `Розміри: 800х1200х144(мм). Навантаження: до 2500кг. Маркування:
-            знаками EUR і відмітками IPPC`,
+            ...catalogData,
             score: "1",
           },
         ])
@@ -47,10 +81,7 @@ const CatalogItem = () => {
     const result = [
       ...JSON.parse(basket),
       {
-        id: "1",
-        title: "Європіддон б/в 1-й сорт, дерев’яний, світлий.",
-        desc: `Розміри: 800х1200х144(мм). Навантаження: до 2500кг. Маркування:
-      знаками EUR і відмітками IPPC`,
+        ...catalogData,
         score: "1",
       },
     ];
@@ -65,21 +96,22 @@ const CatalogItem = () => {
     if (!basket) return;
     if (JSON.parse(basket).length === 0) return;
 
-    const newBasket = JSON.parse(basket).filter((item) => item.id !== id);
-
-    console.log(newBasket);
+    const newBasket = JSON.parse(basket).filter(
+      (item) => item.id !== router.params.id
+    );
 
     await AsyncStorage.setItem("basket", JSON.stringify(newBasket));
     setIsBasket(false);
   };
 
   useEffect(() => {
-    // console.log("ok");
     AsyncStorage.getItem("basket").then((value) => {
       if (!value) return setIsBasket(false);
       if (JSON.parse(value).length === 0) return setIsBasket(false);
 
-      const result = JSON.parse(value).find((item) => item.id === "1");
+      const result = JSON.parse(value).find(
+        (item) => item.id === router.params.id
+      );
       if (!result) return setIsBasket(false);
 
       setIsBasket(true);
@@ -96,36 +128,46 @@ const CatalogItem = () => {
 
         <View style={normal.container}>
           <View style={styles.sliderContainer}>
-            <Swiper
-              activeDotStyle={styles.sliderActiveDot}
-              showsButtons={false}
-              paginationStyle={styles.sliderPagination}
-            >
-              {images.map((item, index) => (
-                <Image key={index} source={item} style={styles.sliderItem} />
-              ))}
-            </Swiper>
+            {Object.keys(catalogData).length !== 0 ? (
+              <Swiper
+                activeDotStyle={styles.sliderActiveDot}
+                showsButtons={false}
+                paginationStyle={styles.sliderPagination}
+              >
+                {catalogData.images.map((item, index) => {
+                  console.log(item.catalog.filename);
+                  return (
+                    <Image
+                      key={index}
+                      source={{
+                        uri: `${SERVER_ADMIN}/media/${item.catalog.filename}`,
+                      }}
+                      resizeMode="contain"
+                      style={styles.sliderItem}
+                    />
+                  );
+                })}
+              </Swiper>
+            ) : (
+              <></>
+            )}
           </View>
 
           <View style={{ marginTop: 40 }}>
-            <Text style={styles.catalogTitle}>
-              Піддон полегшений 800х1200 2-й гатунок
+            <Text style={styles.catalogTitle}>{catalogData.name}</Text>
+            <Text style={styles.catalogTitleSub}>{catalogData.span}</Text>
+            <Text style={styles.catalogIndex}>
+              Код товару: {catalogData.id}
             </Text>
-            <Text style={styles.catalogTitleSub}>дерев’яний, світлий.</Text>
-            <Text style={styles.catalogIndex}>Код товару: Pl-103</Text>
             <View style={{ marginTop: 20 }}>
-              <Text style={styles.catalogText}>Розміри: 800х1200х144(мм).</Text>
               <Text style={styles.catalogText}>
-                Вага: 18кг. Навантаження: до 2500кг.
+                Розміри: {catalogData.size}(мм).
               </Text>
               <Text style={styles.catalogText}>
-                Виготовлений за стандартами EUR, здійснив 2-3 цикли обігової
-                тари. На середньому кубику клеймо IPPC та набита скоба, на
-                крайніх кубиках клеймо EUR. П'ять досок верхнього настилу
-                145мм/100мм/145мм/100мм/145мм. Товщина досок верхнього настилу,
-                перемичок та основи 22мм. Висота кубиків (шашок) 78мм. Все
-                элементы поддона - светлые, без повреждений.
+                Вага: {catalogData.weight}кг. Навантаження: до{" "}
+                {catalogData.upload}кг.
               </Text>
+              <Text style={styles.catalogText}>{catalogData.description}</Text>
             </View>
           </View>
           {isBasket ? (
