@@ -126,7 +126,7 @@ const homeStyle = StyleSheet.create({
     return {
       fontSize: 14,
       lineHeight: 20,
-      fontWeight: 500,
+      fontWeight: "500",
       color: "#272727",
       color: active ? "#ffffff" : "#272727",
     };

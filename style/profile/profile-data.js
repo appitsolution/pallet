@@ -186,7 +186,6 @@ const profileDataStyle = StyleSheet.create({
     marginTop: 30,
     flexDirection: "row",
     justifyContent: "flex-end",
-    gap: 20,
   },
   controlsButtonText: {
     fontSize: 13,

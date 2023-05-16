@@ -25,23 +25,22 @@ const CatalogItem = () => {
 
   console.log(router.params);
 
-  const addHistory = async () => {
+  const addHistory = async (data) => {
     const getHistory = await AsyncStorage.getItem("catalogHistory");
 
     if (!getHistory) {
-      await AsyncStorage.setItem(
-        "catalogHistory",
-        JSON.stringify([catalogData])
-      );
-      return;
-    } else {
-      await AsyncStorage.setItem(
-        "catalogHistory",
-        JSON.stringify([...JSON.parse(getHistory), catalogData])
-      );
-
       return;
     }
+    const checkBackset = JSON.parse(getHistory).find(
+      (item) => item.id === data.id
+    );
+    if (checkBackset !== undefined) return;
+    await AsyncStorage.setItem(
+      "catalogHistory",
+      JSON.stringify([...JSON.parse(getHistory), data])
+    );
+
+    return;
   };
 
   const requestCatalog = async () => {
@@ -49,8 +48,8 @@ const CatalogItem = () => {
       const getCatalog = await axios.get(
         `${SERVER_ADMIN}/api/products/${router.params.id}`
       );
-      console.log(getCatalog.data.images);
       setCatalogData(getCatalog.data);
+      addHistory(getCatalog.data);
     } catch (err) {
       console.log(err);
     }
@@ -58,7 +57,6 @@ const CatalogItem = () => {
 
   useEffect(() => {
     if (isFocusScreen) {
-      addHistory();
       requestCatalog();
     }
   }, [isFocusScreen]);

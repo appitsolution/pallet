@@ -96,6 +96,7 @@ const ChangePassword = ({ show = false, showFunc, changePassword }) => {
                 showFunc(false);
                 Keyboard.dismiss();
               }}
+              style={{ marginRight: 20 }}
             >
               <Text style={styles.controlsButtonText}>Відміна</Text>
             </TouchableOpacity>

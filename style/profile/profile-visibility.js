@@ -37,8 +37,13 @@ const profileOrderStyle = StyleSheet.create({
     flexDirection: "row",
     gap: 14,
   },
-  catalogImg: {
+  catalogImage: {
     width: "40%",
+    maxHeight: 100,
+  },
+  catalogImg: {
+    width: "100%",
+    height: "100%",
   },
   catalogContent: {
     width: "60%",

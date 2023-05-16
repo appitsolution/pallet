@@ -116,12 +116,12 @@ const Navigation = ({ active = "", scoreBasket = 0 }) => {
           style={{ width: "25%", alignItems: "center" }}
           onPress={() => navigation.navigate("basket")}
         >
-          <View style={{ height: 25, position: "relation" }}>
+          <View style={{ height: 25, position: "relative" }}>
             <MenuIcons id="shop" active={active === "shop" ? true : false} />
             {scoreBasket !== 0 ? (
               <View
                 style={{
-                  display: active === "shop" ? "" : "none",
+                  display: active === "shop" ? "flex" : "none",
                   position: "absolute",
                   top: -5,
                   right: -15,

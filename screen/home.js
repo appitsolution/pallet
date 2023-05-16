@@ -10,11 +10,11 @@ import {
 import Logo from "../components/Logo";
 import Swiper from "react-native-swiper";
 import { useEffect, useState } from "react";
-import catalog from "../assets/catalog.png";
 import CatalogPlus from "../assets/Icons/CatalogPlus";
 import Navigation from "../components/Navigation";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+
 import styles from "../style/homeStyle";
 import slide1 from "../assets/images/slider/slide-1.jpg";
 import slide2 from "../assets/images/slider/slide-2.jpg";

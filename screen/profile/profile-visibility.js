@@ -8,45 +8,7 @@ import catalog from "../../assets/catalog.png";
 import CatalogPlus from "../../assets/Icons/CatalogPlus";
 import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
-const catalogData = [
-  {
-    id: "1",
-    title: "Європіддон б/в 1-й сорт, дерев’яний, світлий.",
-    desc: `Розміри: 800х1200х144(мм). Навантаження: до 2500кг. Маркування:
-        знаками EUR і відмітками IPPC`,
-  },
-  {
-    id: "2",
-    title: "Європіддон б/в 1-й сорт, дерев’яний, світлий.",
-    desc: `Розміри: 800х1200х144(мм). Навантаження: до 2500кг. Маркування:
-        знаками EUR і відмітками IPPC`,
-  },
-  {
-    id: "3",
-    title: "Європіддон б/в 1-й сорт, дерев’яний, світлий.",
-    desc: `Розміри: 800х1200х144(мм). Навантаження: до 2500кг. Маркування:
-        знаками EUR і відмітками IPPC`,
-  },
-  {
-    id: "4",
-    title: "Європіддон б/в 1-й сорт, дерев’яний, світлий.",
-    desc: `Розміри: 800х1200х144(мм). Навантаження: до 2500кг. Маркування:
-        знаками EUR і відмітками IPPC`,
-  },
-  {
-    id: "5",
-    title: "Європіддон б/в 1-й сорт, дерев’яний, світлий.",
-    desc: `Розміри: 800х1200х144(мм). Навантаження: до 2500кг. Маркування:
-        знаками EUR і відмітками IPPC`,
-  },
-  {
-    id: "6",
-    title: "Європіддон б/в 1-й сорт, дерев’яний, світлий.",
-    desc: `Розміри: 800х1200х144(мм). Навантаження: до 2500кг. Маркування:
-        знаками EUR і відмітками IPPC`,
-  },
-];
+import { SERVER_ADMIN } from "@env";
 
 const ProfileVisibility = () => {
   const isFocusScreen = useIsFocused();
@@ -57,6 +19,7 @@ const ProfileVisibility = () => {
     const getHistory = await AsyncStorage.getItem("catalogHistory");
 
     if (!getHistory) return setVisibilityData([]);
+    console.log(getHistory);
 
     return setVisibilityData(JSON.parse(getHistory));
   };
@@ -86,15 +49,29 @@ const ProfileVisibility = () => {
                 {visibilityData.map((item, index) => (
                   <TouchableOpacity
                     onPress={() =>
-                      navigation.navigate("catalog-item", { test: "2" })
+                      router.navigate("catalog-item", { id: item.id })
                     }
-                    key={index}
+                    key={item.id}
                     style={styles.catalogItem}
                   >
-                    <Image source={catalog} style={styles.catalogImg} />
+                    <View style={styles.catalogImage}>
+                      <Image
+                        source={{
+                          uri: `${SERVER_ADMIN}/media/${item.images[0].catalog.filename}`,
+                        }}
+                        style={styles.catalogImg}
+                        resizeMode="center"
+                      />
+                    </View>
                     <View style={styles.catalogContent}>
-                      <Text style={styles.catalogTitle}>{item.title}</Text>
-                      <Text style={styles.catalogDesc}>{item.desc}</Text>
+                      <Text style={styles.catalogTitle}>{item.name}</Text>
+                      <Text style={styles.catalogDesc}>
+                        Розміри: {item.size}(мм).
+                      </Text>
+                      <Text style={styles.catalogDesc}>
+                        Навантаження: до {item.upload}кг.
+                      </Text>
+
                       <TouchableOpacity
                         onPress={() => addBasketItem(item.id)}
                         style={styles.catalogBasket}
