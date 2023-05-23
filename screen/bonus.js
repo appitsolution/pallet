@@ -79,9 +79,9 @@ const Bonus = () => {
       <View style={{ paddingBottom: 200 }}>
         <TouchableOpacity
           style={styles.back}
-          onPress={() => navigation.navigate("profile")}
+          onPress={() => navigation.navigate("home")}
         >
-          <View style={{ flexDirection: "row" }}>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
             <BackCatalog />
 
             <Text style={styles.backText}>Бонуси</Text>

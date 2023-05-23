@@ -14,10 +14,10 @@ const profilePartnerStyle = StyleSheet.create({
   },
   content: {
     marginTop: 20,
-    gap: 20,
   },
   wrapper: {
     paddingHorizontal: 16,
+    marginBottom: 20,
   },
   title: {
     fontSize: 14,

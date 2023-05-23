@@ -17,7 +17,7 @@ import ChangeIcon from "../../assets/Icons/ChangeIcon";
 import ChangePassword from "../../components/profile/ChangePassword";
 import ProfileDataComponent from "../../components/profile/ProfileData";
 import useVerify from "../../components/hook/useVerify";
-import {SERVER} from "@env"
+import { SERVER } from "@env";
 
 const ProfileData = () => {
   const [isShowPassModal, setIsShowPassModal] = useState(false);
@@ -97,11 +97,10 @@ const ProfileData = () => {
 
   const changeDelivery = async () => {
     try {
-      await axios.post(`${SERVER}/auth/change/delivery`, {
+      const result = await axios.post(`${SERVER}/auth/change/delivery`, {
         ...deliveryInput,
         id: data._id,
       });
-
       verifyFun();
       setShowChangeAddress(false);
     } catch (err) {
@@ -252,6 +251,7 @@ const ProfileData = () => {
                         region: value,
                       })
                     }
+                    value={deliveryInput.region}
                   />
                 </View>
                 <View style={styles.inputWrapper}>
@@ -266,6 +266,7 @@ const ProfileData = () => {
                         city: value,
                       })
                     }
+                    value={deliveryInput.city}
                   />
                 </View>
                 <View style={styles.inputWrapper}>
@@ -278,6 +279,7 @@ const ProfileData = () => {
                         street: value,
                       })
                     }
+                    value={deliveryInput.street}
                   />
                 </View>
                 <View style={styles.inputWrapper}>
@@ -290,6 +292,7 @@ const ProfileData = () => {
                         house: value,
                       })
                     }
+                    value={deliveryInput.house}
                   />
                 </View>
                 <View style={styles.inputWrapper}>
@@ -302,6 +305,7 @@ const ProfileData = () => {
                         index: value,
                       })
                     }
+                    value={deliveryInput.index}
                   />
                 </View>
                 <TouchableOpacity

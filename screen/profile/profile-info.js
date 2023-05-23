@@ -72,7 +72,7 @@ const ProfileInfo = () => {
             ))}
             <View style={styles.menuItem}>
               <Text style={styles.menuItemTitle}>Версія застосунку</Text>
-              <Text style={styles.menuItemTitle}>5.39.1</Text>
+              <Text style={styles.menuItemTitle}>1.0.0</Text>
             </View>
           </View>
         </ScrollView>

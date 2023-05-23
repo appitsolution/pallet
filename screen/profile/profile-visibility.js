@@ -19,7 +19,6 @@ const ProfileVisibility = () => {
     const getHistory = await AsyncStorage.getItem("catalogHistory");
 
     if (!getHistory) return setVisibilityData([]);
-    console.log(getHistory);
 
     return setVisibilityData(JSON.parse(getHistory));
   };

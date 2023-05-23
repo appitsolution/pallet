@@ -13,7 +13,6 @@ const profileOfferStyle = StyleSheet.create({
     fontWeight: "600",
   },
   offers: {
-    gap: 15,
     marginTop: 20,
     width: "100%",
     paddingBottom: 200,
@@ -21,6 +20,7 @@ const profileOfferStyle = StyleSheet.create({
   offersItem: {
     width: "100%",
     paddingHorizontal: 8,
+    marginBottom: 15,
   },
   offersItemImage: {
     width: "100%",
@@ -29,11 +29,14 @@ const profileOfferStyle = StyleSheet.create({
   containerContent: {
     paddingHorizontal: 16,
     marginTop: 20,
-    gap: 30,
+
     paddingBottom: 220,
   },
   wrapper: {
-    gap: 20,
+    marginBottom: 30,
+  },
+  wrapperGap: {
+    marginBottom: 20,
   },
   title: {
     fontSize: 18,
@@ -81,13 +84,12 @@ const profileOfferStyle = StyleSheet.create({
   table: {
     flexDirection: "row",
     width: "100%",
-    gap: 1,
   },
   tableColumn: (tab) => {
     return {
       flexDirection: "column",
       flex: 1 / tab,
-      gap: 1,
+      marginRight: 1,
     };
   },
   tableRow: (background = "#720608") => {
@@ -96,6 +98,7 @@ const profileOfferStyle = StyleSheet.create({
       backgroundColor: background,
       justifyContent: "center",
       alignItems: "center",
+      marginBottom: 1,
     };
   },
   tableText: {

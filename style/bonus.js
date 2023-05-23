@@ -56,7 +56,6 @@ const bonusStyle = StyleSheet.create({
   bonusHistory: {
     paddingHorizontal: 8,
     marginTop: 20,
-    gap: 10,
     paddingBottom: 120,
   },
   bonusHistoryItem: (color = "default") => {
@@ -74,6 +73,7 @@ const bonusStyle = StyleSheet.create({
         paddingHorizontal: 16,
         paddingVertical: 12,
         backgroundColor: background,
+        marginBottom: 10,
       };
     };
     if (color === "default") {

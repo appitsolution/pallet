@@ -39,9 +39,10 @@ const profileOfferStyle = StyleSheet.create({
   content: {
     marginTop: 20,
     paddingBottom: 220,
-    gap: 30,
   },
-  wrapper: {},
+  wrapper: {
+    marginBottom: 30,
+  },
   title: {
     fontSize: 18,
     lineHeight: 20,
@@ -70,7 +71,6 @@ const profileOfferStyle = StyleSheet.create({
   table: {
     flexDirection: "row",
     width: "100%",
-    gap: 1,
     marginTop: 20,
     paddingHorizontal: 16,
   },

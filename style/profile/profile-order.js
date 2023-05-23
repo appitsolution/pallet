@@ -32,6 +32,7 @@ const profileOrderStyle = StyleSheet.create({
     borderRadius: 4,
     paddingVertical: 14,
     paddingHorizontal: 12,
+    marginBottom: 10,
   },
   ordersWrapperInfo: {
     flexDirection: "row",
@@ -39,12 +40,12 @@ const profileOrderStyle = StyleSheet.create({
   },
   ordersWrapperInfoBlock: {
     flexDirection: "row",
-    gap: 20,
   },
   ordersWrapperInfoNumber: {
     fontSize: 13,
     fontWeight: "700",
     color: "#272727",
+    marginRight: 10,
   },
   ordersWrapperInfoDate: {
     fontSize: 11,
@@ -60,18 +61,21 @@ const profileOrderStyle = StyleSheet.create({
     alignItems: "center",
     transform: [{ rotate: "-90deg" }],
   },
-  ordersWrapperStatus: {
-    fontSize: 13,
-    fontWeight: "700",
-    color: "#FFB21D",
-    marginBottom: 8,
+  ordersWrapperStatus: (color = "#FFB21D") => {
+    return {
+      fontSize: 13,
+      fontWeight: "700",
+      color: color,
+      marginBottom: 8,
+    };
   },
   orderWrapperItem: {
     flexDirection: "row",
     width: "100%",
+    marginBottom: 10,
   },
   orderWrapperItemGap: {
-    gap: 10,
+    flexDirection: "column",
   },
   orderWrapperItemImage: {
     width: 66,

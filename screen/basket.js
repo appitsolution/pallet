@@ -51,6 +51,9 @@ const Basket = () => {
     await AsyncStorage.setItem("basket", JSON.stringify(newBasket));
   };
 
+  const requestOrder = () => {
+    navigation.navigate("order/accept");
+  };
   return (
     <>
       <View style={styles.basket}>
@@ -89,6 +92,7 @@ const Basket = () => {
                         <TextInput
                           onChangeText={(value) => changeInput(value, item.id)}
                           style={styles.basketContentBonusInput}
+                          keyboardType="numeric"
                           value={String(item.score)}
                           onBlur={async (event) => {
                             if (event.nativeEvent.text === "") {
@@ -126,7 +130,7 @@ const Basket = () => {
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={() => navigation.navigate("sign")}
+                onPress={requestOrder}
                 style={styles.basketButtonOrder}
               >
                 <Text style={styles.basketButtonOrderText}>

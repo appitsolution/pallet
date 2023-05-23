@@ -140,14 +140,17 @@ const profileDataStyle = StyleSheet.create({
     position: "relative",
     marginBottom: 20,
   },
-  input: {
-    width: "100%",
-    height: "100%",
-    borderColor: "#B3B0AF",
-    borderWidth: 1.5,
-    borderRadius: 5,
-    paddingLeft: 15,
+  input: (error = false) => {
+    return {
+      width: "100%",
+      height: "100%",
+      borderColor: error ? "#B00020" : "#B3B0AF",
+      borderWidth: error ? 2 : 1.5,
+      borderRadius: 5,
+      paddingLeft: 15,
+    };
   },
+
   inputPlaceholder: {
     position: "absolute",
     top: -6,

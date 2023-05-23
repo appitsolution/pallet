@@ -57,7 +57,6 @@ const catalogItemStyle = StyleSheet.create({
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "center",
-      gap: 12,
       marginTop: 20,
       borderRadius: 4,
       backgroundColor: active ? "#F40000" : "#272727",
@@ -92,6 +91,7 @@ const catalogItemStyle = StyleSheet.create({
     lineHeight: 16,
     fontWeight: "500",
     color: "white",
+    marginLeft: 12,
   },
 });
 

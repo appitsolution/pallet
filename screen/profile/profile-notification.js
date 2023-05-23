@@ -1,16 +1,49 @@
 import { View, Text, TouchableOpacity } from "react-native";
 import Navigation from "../../components/Navigation";
 import styles from "../../style/profile/profile-notification";
-import { useNavigation } from "@react-navigation/native";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
 import BackCatalog from "../../assets/Icons/BackCatalog";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { StatusBar } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const ProfileNotification = () => {
   const navigation = useNavigation();
+  const isFocusedScreen = useIsFocused();
 
   const [notificationChat, setNotificationChat] = useState(false);
   const [notificationSocial, setNotificationSocial] = useState(false);
+
+  const requestNotification = async () => {
+    const getNotification = await AsyncStorage.getItem("notification");
+    if (data === null) return;
+    const data = JSON.parse(getNotification);
+
+    setNotificationChat(data.chat);
+    setNotificationSocial(data.social);
+  };
+
+  const changeNotificationChat = async () => {
+    await AsyncStorage.setItem(
+      "notification",
+      JSON.stringify({ chat: !notificationChat, social: notificationSocial })
+    );
+    setNotificationChat(!notificationChat);
+  };
+
+  const changeNotificationSocial = async () => {
+    await AsyncStorage.setItem(
+      "notification",
+      JSON.stringify({ chat: notificationChat, social: !notificationSocial })
+    );
+    setNotificationSocial(!notificationSocial);
+  };
+
+  useEffect(() => {
+    if (isFocusedScreen) {
+      requestNotification();
+    }
+  }, [isFocusedScreen]);
   return (
     <>
       <View>
@@ -24,7 +57,7 @@ const ProfileNotification = () => {
 
         <TouchableOpacity
           activeOpacity={0.7}
-          onPress={() => setNotificationChat(!notificationChat)}
+          onPress={changeNotificationChat}
           style={styles.wrapper}
         >
           <View style={styles.wrapperText}>
@@ -42,7 +75,7 @@ const ProfileNotification = () => {
         </TouchableOpacity>
         <TouchableOpacity
           activeOpacity={0.7}
-          onPress={() => setNotificationSocial(!notificationSocial)}
+          onPress={changeNotificationSocial}
           style={styles.wrapper}
         >
           <View style={styles.wrapperText}>

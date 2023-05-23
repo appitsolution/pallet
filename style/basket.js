@@ -22,7 +22,6 @@ const basketStyle = StyleSheet.create({
   basketList: {
     width: "100%",
     marginTop: 20,
-    gap: 16,
   },
   basketItem: {
     backgroundColor: "#FFFFFF",
@@ -37,12 +36,16 @@ const basketStyle = StyleSheet.create({
     borderRadius: 4,
     padding: 12,
     paddingRight: 16,
+    paddingVertical: 25,
+    paddingTop: 50,
     flexDirection: "row",
-    gap: 14,
     position: "relative",
+
+    marginBottom: 16,
   },
   basketImage: {
     width: "40%",
+    marginRight: 14,
   },
   basketContent: {
     width: "60%",
@@ -60,8 +63,8 @@ const basketStyle = StyleSheet.create({
   },
   basketContentClose: {
     position: "absolute",
-    top: 0,
-    right: 0,
+    top: 10,
+    right: 4,
   },
 
   basketContentBonus: {

@@ -9,6 +9,17 @@ import {
 import styles from "../../style/profile/profile-data";
 import CheckBoxIcon from "../../assets/Icons/CheckBoxIcon";
 import { useState } from "react";
+import * as yup from "yup";
+
+const validationSchema = yup.object().shape({
+  currentPassword: yup
+    .string()
+    .min(6, "Пароль должен содержать не менее 6 символов")
+    .required('Поле "Пароль" обязательно для заполнения'),
+  newPassword: yup
+    .string()
+    .required('Поле "Пароль" обязательно для заполнения'),
+});
 
 const ChangePassword = ({ show = false, showFunc, changePassword }) => {
   const [isShowPass, setIsShowPass] = useState(false);
@@ -19,7 +30,46 @@ const ChangePassword = ({ show = false, showFunc, changePassword }) => {
     acceptPassword: "",
   });
 
-  const checkPassword = () => {
+  const [currentPasswordError, setCurrentPassordError] = useState(false);
+  const [newPasswordError, setNewPasswordError] = useState(false);
+  const [acceptPasswordError, setAcceptPasswordError] = useState(false);
+
+  const checkPassword = async () => {
+    try {
+      const result = await validationSchema.validate(
+        {
+          currentPassword: passwordInput.currentPassword,
+          newPassword: passwordInput.newPassword,
+        },
+        {
+          abortEarly: false,
+          context: {
+            changePassword,
+          },
+        }
+      );
+
+      console.log(result);
+    } catch (err) {
+      const dataError = await JSON.stringify(err);
+
+      const result = JSON.parse(dataError);
+      // Если есть ошибки валидации, обработайте их здесь
+      result.inner.forEach((item) => {
+        if (item.path === "currentPassword") {
+          setCurrentPassordError(true);
+        } else if (item.path === "newPassword") {
+          setNewPasswordError(true);
+        } else if (item.path === "acceptPassword") {
+          setAcceptPasswordError(true);
+        }
+      });
+    }
+
+    return;
+    setIsShowPass(false);
+    showFunc(false);
+    Keyboard.dismiss();
     if (
       !passwordInput.acceptPassword ||
       !passwordInput.currentPassword ||
@@ -42,34 +92,37 @@ const ChangePassword = ({ show = false, showFunc, changePassword }) => {
               Існуючий або тимчасовий пароль
             </Text>
             <TextInput
-              style={styles.input}
+              style={styles.input(currentPasswordError)}
               secureTextEntry={!isShowPass}
               onChangeText={(value) =>
                 setPasswordInput({ ...passwordInput, currentPassword: value })
               }
               value={passwordInput.currentPassword}
+              onFocus={() => setCurrentPassordError(false)}
             />
           </View>
           <View style={styles.inputWrapper}>
             <Text style={styles.inputPlaceholder}>Придумайте новий пароль</Text>
             <TextInput
-              style={styles.input}
+              style={styles.input(newPasswordError)}
               secureTextEntry={!isShowPass}
               onChangeText={(value) =>
                 setPasswordInput({ ...passwordInput, newPassword: value })
               }
               value={passwordInput.newPassword}
+              onFocus={() => setNewPasswordError(false)}
             />
           </View>
           <View style={styles.inputWrapper}>
             <Text style={styles.inputPlaceholder}>Підтвердіть пароль</Text>
             <TextInput
-              style={styles.input}
+              style={styles.input(acceptPasswordError)}
               secureTextEntry={!isShowPass}
               onChangeText={(value) =>
                 setPasswordInput({ ...passwordInput, acceptPassword: value })
               }
               value={passwordInput.acceptPassword}
+              onFocus={() => setAcceptPasswordError(false)}
             />
           </View>
 
@@ -102,10 +155,7 @@ const ChangePassword = ({ show = false, showFunc, changePassword }) => {
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => {
-                setIsShowPass(false);
-                showFunc(false);
                 checkPassword();
-                Keyboard.dismiss();
               }}
             >
               <Text style={styles.controlsButtonText}>Зберегти</Text>

@@ -1,6 +1,13 @@
-import { useNavigation } from "@react-navigation/native";
-import { useState } from "react";
-import { View, Text, TouchableOpacity, TextInput, Alert } from "react-native";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  TextInput,
+  Alert,
+  StatusBar,
+} from "react-native";
 import axios from "axios";
 import styles from "../style/register";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -9,22 +16,44 @@ import { SERVER } from "@env";
 const Login = () => {
   const [loginButtons, setLoginButtons] = useState(0);
   const navigation = useNavigation();
+  const route = useRoute();
 
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
+  const [loginError, setLoginError] = useState(false);
+  const [passwordError, setPasswordError] = useState(false);
+  const [messageError, setMessageError] = useState(false);
 
   const loginRequest = async () => {
+    if (login === "") {
+      setLoginError(true);
+    }
+    if (password === "") {
+      setPasswordError(true);
+    }
     if (!login || !password) return;
     try {
       const result = await axios.post(`${SERVER}/auth/login`, {
         login,
         password,
       });
-      console.log(result.data);
+      // console.log(result.data);
       if (result.data.status === "ok") {
-        console.log(result.data);
+        // console.log(result.data);
         await AsyncStorage.setItem("token", result.data.token);
+        if (route.params !== undefined) {
+          if (
+            route.params.prevScreen !== undefined ||
+            route.params.prevScreen !== ""
+          ) {
+            return navigation.navigate(route.params.prevScreen);
+          }
+        }
         navigation.navigate("profile");
+      } else {
+        setLoginError(true);
+        setPasswordError(true);
+        setMessageError(true);
       }
     } catch (err) {
       console.log(err);
@@ -46,13 +75,37 @@ const Login = () => {
         >
           <TouchableOpacity
             style={styles.button}
-            onPress={() => navigation.navigate("login")}
+            onPress={() => {
+              if (route.params !== undefined) {
+                if (
+                  route.params.prevScreen !== undefined ||
+                  route.params.prevScreen !== ""
+                ) {
+                  return navigation.navigate("login", {
+                    prevScreen: route.params.prevScreen,
+                  });
+                }
+              }
+              navigation.navigate("login");
+            }}
           >
             <Text style={styles.buttonText}>Вхід</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.buttonActive(loginButtons)}
-            onPress={() => navigation.navigate("register")}
+            onPress={() => {
+              if (route.params !== undefined) {
+                if (
+                  route.params.prevScreen !== undefined ||
+                  route.params.prevScreen !== ""
+                ) {
+                  return navigation.navigate("register", {
+                    prevScreen: route.params.prevScreen,
+                  });
+                }
+              }
+              navigation.navigate("register");
+            }}
           >
             <Text style={styles.buttonTextActive}>Реєстрація</Text>
           </TouchableOpacity>
@@ -62,20 +115,34 @@ const Login = () => {
           <View style={styles.formWrapper}>
             <Text style={styles.placeholder}>Телефон або електронна почта</Text>
             <TextInput
-              style={styles.input}
+              style={styles.input(loginError)}
               keyboardType="email-address"
               value={login}
               onChangeText={(value) => setLogin(value)}
+              onFocus={() => {
+                setLoginError(false);
+              }}
             />
           </View>
           <View style={styles.formWrapper}>
             <Text style={styles.placeholder}>Пароль</Text>
             <TextInput
-              style={styles.input}
+              style={styles.input(passwordError)}
               secureTextEntry
               value={password}
               onChangeText={(value) => setPassword(value)}
+              onFocus={() => {
+                setPasswordError(false);
+                setMessageError(false);
+              }}
             />
+            {messageError ? (
+              <Text style={styles.formErrorMessage}>
+                Не правильний логін або пароль
+              </Text>
+            ) : (
+              <></>
+            )}
           </View>
 
           <TouchableOpacity style={styles.submit} onPress={loginRequest}>
@@ -83,6 +150,8 @@ const Login = () => {
           </TouchableOpacity>
         </View>
       </View>
+
+      <StatusBar barStyle="dark-content" />
     </>
   );
 };

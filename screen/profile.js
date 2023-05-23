@@ -59,12 +59,6 @@ const menuData = [
     important: false,
   },
   {
-    title: "Переглянуті",
-    image: "visibility",
-    path: "profile/visibility",
-    important: false,
-  },
-  {
     title: "Викуп віддонів",
     image: "deposit",
     path: "",
@@ -116,6 +110,7 @@ const Profile = () => {
   return (
     <>
       <ScrollView
+        contentContainerStyle={{ paddingBottom: 220 }}
         refreshControl={
           <RefreshControl refreshing={refresh} onRefresh={verifyFun} />
         }
@@ -136,6 +131,7 @@ const Profile = () => {
             {data.firstName !== "" ? data.firstName : ""}
           </Text>
         </TouchableOpacity>
+
         <View style={styles.menu}>
           {menuData.map((item, index) => (
             <TouchableOpacity

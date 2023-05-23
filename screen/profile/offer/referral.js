@@ -30,7 +30,10 @@ const ProfileOfferReferral = () => {
         </TouchableOpacity>
         <ScrollView contentContainerStyle={styles.containerContent}>
           <View style={styles.wrapper}>
-            <Text style={styles.title}>Про реферальну програму</Text>
+            <View style={styles.wrapperGap}>
+              <Text style={styles.title}>Про реферальну програму</Text>
+            </View>
+
             <Text style={styles.desc}>
               Порекомендуй компанію Палетний Двір - отримай подарунок. Компанія
               пропонує подарунки у вигляді Сертифікатів від брендів MD Fashion
@@ -39,9 +42,11 @@ const ProfileOfferReferral = () => {
             </Text>
           </View>
           <View style={styles.wrapper}>
-            <Text style={styles.title}>
-              Щоб прийняти участь в реферальній програмі
-            </Text>
+            <View style={styles.wrapperGap}>
+              <Text style={styles.title}>
+                Щоб прийняти участь в реферальній програмі
+              </Text>
+            </View>
             <Text style={styles.desc}>
               <Text style={styles.boldText}>Крок 1.</Text> В чат-боті натисни
               «Реферальна програма» - «Отримати код».

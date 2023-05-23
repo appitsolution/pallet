@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import Navigation from "../../components/Navigation";
 import styles from "../../style/profile/profile-partner";
 import { useNavigation } from "@react-navigation/native";
@@ -38,15 +38,16 @@ const ProfilePartner = () => {
           <Text style={styles.backText}>Партнерська програма</Text>
         </TouchableOpacity>
       </View>
-
-      <View style={styles.content}>
-        {partnerData.map((item, index) => (
-          <View style={styles.wrapper} key={index}>
-            <Text style={styles.title}>{item.title}</Text>
-            <Text style={styles.desc}>{item.desc}</Text>
-          </View>
-        ))}
-      </View>
+      <ScrollView>
+        <View style={styles.content}>
+          {partnerData.map((item, index) => (
+            <View style={styles.wrapper} key={index}>
+              <Text style={styles.title}>{item.title}</Text>
+              <Text style={styles.desc}>{item.desc}</Text>
+            </View>
+          ))}
+        </View>
+      </ScrollView>
       <Navigation active="profile" />
       <StatusBar barStyle="dark-content" />
     </>

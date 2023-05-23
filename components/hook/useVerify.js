@@ -5,7 +5,15 @@ import axios from "axios";
 
 const useVerify = async () => {
   const token = await AsyncStorage.getItem("token");
+
   if (!token) {
+    return {
+      verify: false,
+      dataFetch: {},
+    };
+  }
+
+  if (token === "") {
     return {
       verify: false,
       dataFetch: {},
@@ -16,7 +24,7 @@ const useVerify = async () => {
     token: token,
   });
 
-  if (result.data.code === 401) {
+  if (result.data.code !== 200) {
     return {
       verify: false,
       dataFetch: {},

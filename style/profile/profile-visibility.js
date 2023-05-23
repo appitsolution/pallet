@@ -16,7 +16,6 @@ const profileOrderStyle = StyleSheet.create({
   catalogContainer: {
     width: "100%",
     paddingTop: 20,
-    gap: 16,
     backgroundColor: "#ffffff",
     paddingHorizontal: 8,
     paddingBottom: 20,
@@ -35,11 +34,12 @@ const profileOrderStyle = StyleSheet.create({
     padding: 12,
     paddingRight: 16,
     flexDirection: "row",
-    gap: 14,
+    marginBottom: 16,
   },
   catalogImage: {
     width: "40%",
     maxHeight: 100,
+    marginRight: 16,
   },
   catalogImg: {
     width: "100%",
@@ -61,7 +61,8 @@ const profileOrderStyle = StyleSheet.create({
   },
   catalogBasket: {
     marginLeft: "auto",
-    marginRight: 16,
+    marginRight: 10,
+    marginTop: 10,
   },
 });
 

@@ -62,7 +62,6 @@ const registerStyle = StyleSheet.create({
   formContainer: {
     marginTop: 30,
     paddingHorizontal: 8,
-    gap: 25,
   },
   formWrapper: {
     position: "relative",
@@ -80,12 +79,22 @@ const registerStyle = StyleSheet.create({
     left: 9,
     zIndex: 2,
   },
-  input: {
-    paddingVertical: 20,
-    paddingLeft: 16,
-    borderColor: "#B3B0AF",
-    borderWidth: 1.5,
-    borderRadius: 4,
+  input: (error = false) => {
+    return {
+      paddingVertical: 20,
+      paddingLeft: 16,
+      borderColor: error ? "#B00020" : "#B3B0AF",
+      borderWidth: error ? 2 : 1.5,
+      borderRadius: 4,
+    };
+  },
+  formErrorMessage: {
+    fontSize: 12,
+    lineHeight: 14,
+    fontWeight: "400",
+    color: "#B00020",
+    marginTop: 5,
+    marginLeft: 10,
   },
   inputWarning: {
     fontSize: 12,

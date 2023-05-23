@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import Logo from "../components/Logo";
 import Swiper from "react-native-swiper";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import CatalogPlus from "../assets/Icons/CatalogPlus";
 import Navigation from "../components/Navigation";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
@@ -24,37 +24,57 @@ import bonus from "../assets/images/slider/bonus.jpg";
 import { StatusBar } from "expo-status-bar";
 import axios from "axios";
 import { SERVER_ADMIN } from "@env";
+import useVerify from "../components/hook/useVerify";
+import { Circle } from "react-native-progress";
 
 const slideData = [
   {
     id: "1",
     image: slide1,
     bonus: true,
+    path: async () => {
+      return "bonus";
+    },
   },
   {
     id: "2",
     image: slide2,
     bonus: false,
+    path: async () => {
+      const verify = await useVerify();
+      if (verify.verify) {
+        return "profile/offer/certificate";
+      } else {
+        return "login";
+      }
+    },
   },
   {
     id: "3",
     image: slide3,
     bonus: false,
+    path: async () => {
+      const verify = await useVerify();
+      if (verify.verify) {
+        return "profile/offer/referral";
+      } else {
+        return "login";
+      }
+    },
   },
   {
     id: "4",
     image: slide4,
     bonus: false,
+    path: async () => {
+      const verify = await useVerify();
+      if (verify.verify) {
+        return "profile/offer/gift";
+      } else {
+        return "login";
+      }
+    },
   },
-];
-
-const sortButtons = [
-  { text: "Всі", active: true },
-  { text: "Eur/Epal", active: false },
-  { text: "800x120", active: false },
-  { text: "1000x1200", active: false },
-  { text: "Нові", active: false },
-  { text: "Пластикові", active: false },
 ];
 
 const Home = () => {
@@ -109,11 +129,69 @@ const Home = () => {
     }
   };
 
+  const requestSortButtons = async () => {
+    const requestCategories = await axios(
+      `${SERVER_ADMIN}/api/categories-products`
+    );
+
+    const result = requestCategories.data.docs.map((item) => {
+      return {
+        text: item.name,
+        active: false,
+      };
+    });
+
+    setSortButtons([{ text: "Всі", active: true }, ...result]);
+  };
+
+  const verifyFun = async (path) => {
+    const { verify, dataFetch } = await useVerify();
+
+    if (verify) {
+      return router.navigate(path);
+    } else {
+      return router.navigate("login", { prevScreen: path });
+    }
+  };
+
   useEffect(() => {
     if (isFocusedScreen) {
       requestCatalog();
+      requestSortButtons();
     }
   }, [isFocusedScreen]);
+
+  const [sortInput, setSortInput] = useState("Всі");
+  const sortDataChange = useMemo(() => {
+    if (sortInput === "Всі") return [];
+    const result = catalogData.filter(
+      (item) => item.categories.name === sortInput
+    );
+
+    return result;
+  }, [sortInput]);
+
+  const [sortButtons, setSortButtons] = useState([
+    { text: "Всі", active: true },
+  ]);
+
+  const sortFunc = (value) => {
+    const changeSort = sortButtons.map((item) => {
+      if (item.text === value) {
+        return {
+          text: item.text,
+          active: true,
+        };
+      } else {
+        return {
+          text: item.text,
+          active: false,
+        };
+      }
+    });
+    setSortButtons(changeSort);
+    setSortInput(value);
+  };
 
   return (
     <>
@@ -134,7 +212,14 @@ const Home = () => {
               {slideData.map((item) => {
                 if (item.bonus) {
                   return (
-                    <View style={styles.bannerItem} key={item.id}>
+                    <TouchableOpacity
+                      onPress={async () => {
+                        const path = await item.path();
+                        router.navigate(path);
+                      }}
+                      style={styles.bannerItem}
+                      key={item.id}
+                    >
                       <View style={styles.bannerFirstBonus}>
                         <ImageBackground
                           source={item.image}
@@ -147,18 +232,25 @@ const Home = () => {
                           style={{ width: "100%", height: "100%" }}
                         ></ImageBackground>
                       </View>
-                    </View>
+                    </TouchableOpacity>
                   );
                 } else {
                   return (
-                    <View style={styles.bannerItem} key={item.id}>
+                    <TouchableOpacity
+                      onPress={async () => {
+                        const path = await item.path();
+                        router.navigate(path);
+                      }}
+                      style={styles.bannerItem}
+                      key={item.id}
+                    >
                       <View style={styles.bannerFirst}>
                         <ImageBackground
                           source={item.image}
                           style={{ width: "100%", height: "100%" }}
                         ></ImageBackground>
                       </View>
-                    </View>
+                    </TouchableOpacity>
                   );
                 }
               })}
@@ -176,7 +268,7 @@ const Home = () => {
               <TouchableOpacity
                 style={styles.tabsItem(!testTab)}
                 onPress={() => {
-                  setTestTab(false);
+                  verifyFun("buyout");
                 }}
               >
                 <Text style={styles.tabsText}>Викуп піддонів</Text>
@@ -189,7 +281,10 @@ const Home = () => {
                 style={styles.sortButtonList}
                 data={sortButtons}
                 renderItem={({ item }) => (
-                  <TouchableOpacity style={styles.sortButtonItem(item.active)}>
+                  <TouchableOpacity
+                    style={styles.sortButtonItem(item.active)}
+                    onPress={() => sortFunc(item.text)}
+                  >
                     <Text style={styles.sortButtonItemText(item.active)}>
                       {item.text}
                     </Text>
@@ -202,39 +297,94 @@ const Home = () => {
           </View>
 
           <View style={styles.catalogContainer}>
-            {catalogData.map((item) => (
-              <TouchableOpacity
-                onPress={() => router.navigate("catalog-item", { id: item.id })}
-                key={item.id}
-                style={styles.catalogItem}
-              >
-                <View style={styles.catalogImage}>
-                  <Image
-                    source={{
-                      uri: `${SERVER_ADMIN}/media/${item.images[0].catalog.filename}`,
-                    }}
-                    style={styles.catalogImg}
-                    resizeMode="center"
-                  />
-                </View>
-                <View style={styles.catalogContent}>
-                  <Text style={styles.catalogTitle}>{item.name}</Text>
-                  <Text style={styles.catalogDesc}>
-                    Розміри: {item.size}(мм).
-                  </Text>
-                  <Text style={styles.catalogDesc}>
-                    Навантаження: до {item.upload}кг.
-                  </Text>
+            {catalogData.length === 0 ? (
+              <Circle
+                size={50}
+                indeterminate={true}
+                color={"black"}
+                style={{ alignItems: "center" }}
+              />
+            ) : (
+              <>
+                {sortDataChange.length === 0 ? (
+                  <>
+                    {catalogData.map((item) => (
+                      <TouchableOpacity
+                        onPress={() =>
+                          router.navigate("catalog-item", { id: item.id })
+                        }
+                        key={item.id}
+                        style={styles.catalogItem}
+                      >
+                        <View style={styles.catalogImage}>
+                          <Image
+                            source={{
+                              uri: `${SERVER_ADMIN}/media/${item.images[0].catalog.filename}`,
+                            }}
+                            style={styles.catalogImg}
+                            resizeMode="center"
+                          />
+                        </View>
+                        <View style={styles.catalogContent}>
+                          <Text style={styles.catalogTitle}>{item.name}</Text>
+                          <Text style={styles.catalogDesc}>
+                            Розміри: {item.size}(мм).
+                          </Text>
+                          <Text style={styles.catalogDesc}>
+                            Навантаження: до {item.upload}кг.
+                          </Text>
 
-                  <TouchableOpacity
-                    onPress={() => addBasketItem(item.id)}
-                    style={styles.catalogBasket}
-                  >
-                    <CatalogPlus />
-                  </TouchableOpacity>
-                </View>
-              </TouchableOpacity>
-            ))}
+                          <TouchableOpacity
+                            onPress={() => addBasketItem(item.id)}
+                            style={styles.catalogBasket}
+                          >
+                            <CatalogPlus />
+                          </TouchableOpacity>
+                        </View>
+                      </TouchableOpacity>
+                    ))}
+                  </>
+                ) : (
+                  <>
+                    {sortDataChange.map((item) => (
+                      <TouchableOpacity
+                        onPress={() =>
+                          router.navigate("catalog-item", { id: item.id })
+                        }
+                        key={item.id}
+                        style={styles.catalogItem}
+                      >
+                        <View style={styles.catalogImage}>
+                          <Image
+                            source={{
+                              uri: `${SERVER_ADMIN}/media/${item.images[0].catalog.filename}`,
+                            }}
+                            style={styles.catalogImg}
+                            resizeMode="center"
+                          />
+                        </View>
+                        <View style={styles.catalogContent}>
+                          <Text style={styles.catalogTitle}>{item.name}</Text>
+                          <Text style={styles.catalogDesc}>
+                            Розміри: {item.size}(мм).
+                          </Text>
+                          <Text style={styles.catalogDesc}>
+                            Навантаження: до {item.upload}кг.
+                          </Text>
+
+                          <TouchableOpacity
+                            onPress={() => addBasketItem(item.id)}
+                            style={styles.catalogBasket}
+                          >
+                            <CatalogPlus />
+                          </TouchableOpacity>
+                        </View>
+                      </TouchableOpacity>
+                    ))}
+                  </>
+                )}
+              </>
+            )}
           </View>
         </ScrollView>
       </View>

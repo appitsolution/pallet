@@ -1,4 +1,11 @@
-import { View, Text, TouchableOpacity, Image } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Image,
+  StatusBar,
+  ScrollView,
+} from "react-native";
 import BackCatalog from "../assets/Icons/BackCatalog";
 import Swiper from "react-native-swiper";
 import normal from "../style/normal";
@@ -123,71 +130,75 @@ const CatalogItem = () => {
             <BackCatalog />
           </TouchableOpacity>
         </View>
+        <ScrollView contentContainerStyle={{ paddingBottom: 200 }}>
+          <View style={normal.container}>
+            <View style={styles.sliderContainer}>
+              {Object.keys(catalogData).length !== 0 ? (
+                <Swiper
+                  activeDotStyle={styles.sliderActiveDot}
+                  showsButtons={false}
+                  paginationStyle={styles.sliderPagination}
+                >
+                  {catalogData.images.map((item, index) => {
+                    console.log(item.catalog.filename);
+                    return (
+                      <Image
+                        key={index}
+                        source={{
+                          uri: `${SERVER_ADMIN}/media/${item.catalog.filename}`,
+                        }}
+                        resizeMode="contain"
+                        style={styles.sliderItem}
+                      />
+                    );
+                  })}
+                </Swiper>
+              ) : (
+                <></>
+              )}
+            </View>
 
-        <View style={normal.container}>
-          <View style={styles.sliderContainer}>
-            {Object.keys(catalogData).length !== 0 ? (
-              <Swiper
-                activeDotStyle={styles.sliderActiveDot}
-                showsButtons={false}
-                paginationStyle={styles.sliderPagination}
+            <View style={{ marginTop: 40 }}>
+              <Text style={styles.catalogTitle}>{catalogData.name}</Text>
+              <Text style={styles.catalogTitleSub}>{catalogData.span}</Text>
+              <Text style={styles.catalogIndex}>
+                Код товару: {catalogData.id}
+              </Text>
+              <View style={{ marginTop: 20 }}>
+                <Text style={styles.catalogText}>
+                  Розміри: {catalogData.size}(мм).
+                </Text>
+                <Text style={styles.catalogText}>
+                  Вага: {catalogData.weight}кг. Навантаження: до{" "}
+                  {catalogData.upload}кг.
+                </Text>
+                <Text style={styles.catalogText}>
+                  {catalogData.description}
+                </Text>
+              </View>
+            </View>
+            {isBasket ? (
+              <TouchableOpacity
+                style={styles.basketGo(true)}
+                onPress={() => deleteBasketItem()}
               >
-                {catalogData.images.map((item, index) => {
-                  console.log(item.catalog.filename);
-                  return (
-                    <Image
-                      key={index}
-                      source={{
-                        uri: `${SERVER_ADMIN}/media/${item.catalog.filename}`,
-                      }}
-                      resizeMode="contain"
-                      style={styles.sliderItem}
-                    />
-                  );
-                })}
-              </Swiper>
+                <ShopIcon />
+                <Text style={styles.basketGoText}>В кошику</Text>
+              </TouchableOpacity>
             ) : (
-              <></>
+              <TouchableOpacity
+                style={styles.basketGo()}
+                onPress={() => addBasketItem()}
+              >
+                <ShopIcon />
+                <Text style={styles.basketGoText}>Додати в кошик</Text>
+              </TouchableOpacity>
             )}
           </View>
-
-          <View style={{ marginTop: 40 }}>
-            <Text style={styles.catalogTitle}>{catalogData.name}</Text>
-            <Text style={styles.catalogTitleSub}>{catalogData.span}</Text>
-            <Text style={styles.catalogIndex}>
-              Код товару: {catalogData.id}
-            </Text>
-            <View style={{ marginTop: 20 }}>
-              <Text style={styles.catalogText}>
-                Розміри: {catalogData.size}(мм).
-              </Text>
-              <Text style={styles.catalogText}>
-                Вага: {catalogData.weight}кг. Навантаження: до{" "}
-                {catalogData.upload}кг.
-              </Text>
-              <Text style={styles.catalogText}>{catalogData.description}</Text>
-            </View>
-          </View>
-          {isBasket ? (
-            <TouchableOpacity
-              style={styles.basketGo(true)}
-              onPress={() => deleteBasketItem()}
-            >
-              <ShopIcon />
-              <Text style={styles.basketGoText}>В кошику</Text>
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity
-              style={styles.basketGo()}
-              onPress={() => addBasketItem()}
-            >
-              <ShopIcon />
-              <Text style={styles.basketGoText}>Додати в кошик</Text>
-            </TouchableOpacity>
-          )}
-        </View>
+        </ScrollView>
       </View>
       <Navigation />
+      <StatusBar barStyle="dark-content" />
     </>
   );
 };

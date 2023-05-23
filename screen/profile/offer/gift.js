@@ -30,7 +30,9 @@ const ProfileOfferGift = () => {
         </TouchableOpacity>
         <ScrollView contentContainerStyle={styles.containerContent}>
           <View style={styles.wrapper}>
-            <Text style={styles.title}>Зроби подарунок своєму колективу</Text>
+            <View style={styles.wrapperGap}>
+              <Text style={styles.title}>Зроби подарунок своєму колективу</Text>
+            </View>
             <Text style={styles.desc}>
               Колектив, це люди з якими ми проводимо багато часу. Ми хочемо бути
               частиною Ваших історій і тому реалізували пропозицію для
@@ -38,41 +40,46 @@ const ProfileOfferGift = () => {
             </Text>
           </View>
 
-          <View style={styles.table}>
-            <View style={styles.tableColumn(3)}>
-              <View style={styles.tableRow()}>
-                <Text style={styles.tableText}>Угода від 250 піддонів</Text>
+          <View style={styles.wrapper}>
+            <View style={styles.table}>
+              <View style={styles.tableColumn(3)}>
+                <View style={styles.tableRow()}>
+                  <Text style={styles.tableText}>Угода від 250 піддонів</Text>
+                </View>
+                <View style={styles.tableRow("#363636")}>
+                  <Text style={styles.tableText}>Середня піца</Text>
+                </View>
               </View>
-              <View style={styles.tableRow("#363636")}>
-                <Text style={styles.tableText}>Середня піца</Text>
+              <View style={styles.tableColumn(3)}>
+                <View style={styles.tableRow()}>
+                  <Text style={styles.tableText}>Угода від 500 піддонів</Text>
+                </View>
+                <View style={styles.tableRow("#363636")}>
+                  <Text style={styles.tableText}>Велика піца</Text>
+                </View>
               </View>
-            </View>
-            <View style={styles.tableColumn(3)}>
-              <View style={styles.tableRow()}>
-                <Text style={styles.tableText}>Угода від 500 піддонів</Text>
-              </View>
-              <View style={styles.tableRow("#363636")}>
-                <Text style={styles.tableText}>Велика піца</Text>
-              </View>
-            </View>
-            <View style={styles.tableColumn(3)}>
-              <View style={styles.tableRow()}>
-                <Text style={styles.tableText}>Угода від 250 піддонів</Text>
-              </View>
-              <View style={styles.tableRow("#363636")}>
-                <Text style={styles.tableText}>Піца + Суші</Text>
+              <View style={styles.tableColumn(3)}>
+                <View style={styles.tableRow()}>
+                  <Text style={styles.tableText}>Угода від 250 піддонів</Text>
+                </View>
+                <View style={styles.tableRow("#363636")}>
+                  <Text style={styles.tableText}>Піца + Суші</Text>
+                </View>
               </View>
             </View>
           </View>
 
           <View style={styles.wrapper}>
-            <Text style={styles.titleSecond}>
-              Зроби замовлення і наступного дня на Вас чекатиме смачний обідній
-              подарунок.
-              <Text style={styles.descSecond}>
-                (Відправляємо наступного дня після фактичного відвантаження
-                Вашого замовлення. Для клієнтів компанії Палетний Двір)
+            <View style={styles.wrapperGap}>
+              <Text style={styles.titleSecond}>
+                Зроби замовлення і наступного дня на Вас чекатиме смачний
+                обідній подарунок.
               </Text>
+            </View>
+
+            <Text style={styles.descSecond}>
+              (Відправляємо наступного дня після фактичного відвантаження Вашого
+              замовлення. Для клієнтів компанії Палетний Двір)
             </Text>
           </View>
 
