@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import Navigation from "../components/Navigation";
 import styles from "../style/buyout";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import CheckBoxIcon from "../assets/Icons/CheckBoxIcon";
 import FileIcon from "../assets/Icons/FileIcon";
 import * as ImagePicker from "expo-image-picker";
@@ -19,10 +19,11 @@ import useVerify from "../components/hook/useVerify";
 import { SERVER_ADMIN } from "@env";
 import { useNavigation } from "@react-navigation/native";
 import Spinner from "react-native-loading-spinner-overlay";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import buyoutReturnPrice from "../components/buyoutReturnPrice";
 
 const Buyout = () => {
   const navigation = useNavigation();
-  const [isShowFileInput, setIsShowFileInput] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const [sizeData, setSizeData] = useState([
@@ -45,10 +46,6 @@ const Buyout = () => {
     },
     {
       title: "1200x1200",
-      active: false,
-    },
-    {
-      title: "1400х1400",
       active: false,
     },
     {
@@ -76,9 +73,32 @@ const Buyout = () => {
     },
   ]);
 
+  const searchPrice = () => {
+    let currentSizeData = 0;
+    let currentStateData = 0;
+
+    sizeData.forEach((item, index) => {
+      if (item.active) {
+        currentSizeData = index;
+      }
+    });
+
+    stateData.forEach((item, index) => {
+      if (item.active) {
+        currentStateData = index;
+      }
+    });
+
+    return buyoutReturnPrice(currentSizeData, currentStateData);
+  };
+
   const [inputScore, setInputScore] = useState("");
+  const [errorScore, setErrorScore] = useState(false);
+  const inputScoreRef = useRef(null);
+  const scrollViewRef = useRef(null);
 
   const [inputAddress, setInputAddress] = useState("");
+  const inputAddressRef = useRef(null);
 
   const inputScoreFun = (value) => {
     const numbersOnly = value.replace(/\D/g, "");
@@ -120,26 +140,42 @@ const Buyout = () => {
     setStateData(newSize);
   };
 
-  const [selectCurrentImage, setSelectCurrentImage] = useState("");
+  const [selectCurrentImage, setSelectCurrentImage] = useState([]);
   const [dataImage, setDataImage] = useState(null);
 
   const selectFile = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
-      allowsEditing: true,
+      allowsEditing: false,
       quality: 1,
+      allowsMultipleSelection: true,
     });
 
     if (!result.cancelled) {
-      setSelectCurrentImage(result.uri);
+      if (result?.selected === undefined) {
+        result.selected = [result];
+      }
+      const selectedFormData = [];
+      const selectedUri = [];
 
-      const formData = new FormData();
-      formData.append("file", {
-        uri: result.uri,
-        type: result.type,
-        name: "buyout.jpg",
+      result.selected.forEach((item, index) => {
+        const itemUri = item.uri.split(".");
+        const typeFile = itemUri[itemUri.length - 1];
+
+        const randomNumber = new Date();
+        const formData = new FormData();
+        formData.append("file", {
+          uri: item.uri,
+          type: `image/${typeFile}`,
+          fileName: "buyout",
+          name: `buyout ${randomNumber}.${typeFile}`,
+        });
+
+        selectedUri.push(item.uri);
+        selectedFormData.push(formData);
       });
 
-      setDataImage(formData);
+      setDataImage(selectedFormData);
+      setSelectCurrentImage(selectedUri);
     } else {
       Alert.alert("error", "You did not select any image.");
     }
@@ -148,6 +184,20 @@ const Buyout = () => {
   const submitFetch = async () => {
     const activeSize = sizeData.find((item) => item.active);
     const activeState = stateData.find((item) => item.active);
+
+    if (inputScore === "" || Number(inputScore) === 0) {
+      setErrorScore(true);
+
+      if (inputScoreRef.current) {
+        console.log("Ok");
+        inputScoreRef.current.measureLayout(scrollViewRef.current, (x, y) => {
+          console.log(y);
+          scrollViewRef.current.scrollTo({ y: y, animated: true });
+        });
+      }
+      return;
+    }
+
     if (!activeSize || !activeState || !inputScore) return;
     const size = activeSize.title;
     const state = activeState.title;
@@ -155,36 +205,55 @@ const Buyout = () => {
     const { dataFetch } = await useVerify();
     const { firstName, lastName, phone } = dataFetch;
 
-    if (isShowFileInput) {
+    if (dataImage) {
       if (dataImage === null) return;
       setLoading(true);
-      fetch(`${SERVER_ADMIN}/api/media`, {
-        method: "post",
-        body: dataImage,
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      })
-        .then((res) => {
-          return res.json();
+
+      const createImageRequest = await Promise.all(
+        dataImage.map((item) => {
+          const config = {
+            method: "post",
+            url: "https://admin.palletdvor.com.ua/api/media",
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+            data: item,
+          };
+
+          return axios(config).then((response) => {
+            console.log(response.data);
+            return response.data;
+          });
         })
-        .then((result) => {
-          axios
-            .post(`${SERVER_ADMIN}/api/buyout`, {
-              firstName: firstName,
-              lastName: lastName,
-              phone: phone,
-              size: size,
-              state: state,
-              score: inputScore,
-              address: inputAddress,
-              image: result.doc.id,
-            })
-            .then(() => {
-              setLoading(false);
-              navigation.navigate("buyout-result");
-            });
+      );
+
+      console.log(createImageRequest);
+      const imagesId = createImageRequest.map((item) => {
+        return {
+          id: item.doc.id,
+          image: item.doc.id,
+        };
+      });
+
+      try {
+        const result = await axios.post(`${SERVER_ADMIN}/api/buyout`, {
+          firstName: firstName,
+          lastName: lastName,
+          phone: phone,
+          size: size,
+          state: state,
+          score: inputScore,
+          address: inputAddress,
+          images: imagesId,
         });
+
+        await AsyncStorage.setItem("buyout", JSON.stringify(result.data.doc));
+
+        setLoading(false);
+        navigation.navigate("buyout-result");
+      } catch (err) {
+        console.log(err);
+      }
     } else {
       setLoading(true);
       axios
@@ -197,6 +266,7 @@ const Buyout = () => {
           score: inputScore,
         })
         .then((res) => {
+          AsyncStorage.setItem("buyout", JSON.stringify(res.data.doc));
           setLoading(false);
           navigation.navigate("buyout-result");
         });
@@ -209,7 +279,10 @@ const Buyout = () => {
         <View style={styles.titleWrapper}>
           <Text style={styles.title}>Хочу продати піддони</Text>
         </View>
-        <ScrollView contentContainerStyle={{ paddingBottom: 220 }}>
+        <ScrollView
+          contentContainerStyle={{ paddingBottom: 220 }}
+          ref={scrollViewRef}
+        >
           <View style={styles.titleWrapperSecond}>
             <Text style={styles.title}>Розмір піддону</Text>
           </View>
@@ -259,9 +332,21 @@ const Buyout = () => {
 
           <View style={styles.inputScoreWrapper}>
             <TextInput
-              style={styles.inputScore}
+              style={styles.inputScore(errorScore)}
               value={inputScore}
               onChangeText={inputScoreFun}
+              onFocus={() => {
+                if (inputScoreRef.current) {
+                  inputScoreRef.current.measureLayout(
+                    scrollViewRef.current,
+                    (x, y) => {
+                      scrollViewRef.current.scrollTo({ y: y, animated: true });
+                    }
+                  );
+                }
+                setErrorScore(false);
+              }}
+              ref={inputScoreRef}
             />
           </View>
 
@@ -276,7 +361,7 @@ const Buyout = () => {
                   зможете обміняти за програмою лояльності{" "}
                 </Text>
                 <View style={styles.bannerBonusScoreWrapper}>
-                  <Text style={styles.bannerBonusScore}>500</Text>
+                  <Text style={styles.bannerBonusScore}>{inputScore}</Text>
                   <Text style={styles.bannerBonusScoreText}>бонусів</Text>
                 </View>
               </View>
@@ -284,59 +369,84 @@ const Buyout = () => {
           )}
 
           <View style={styles.showFileWrapper}>
-            <TouchableOpacity
-              style={styles.showFile}
-              onPress={() => setIsShowFileInput(!isShowFileInput)}
-            >
-              {isShowFileInput ? (
-                <CheckBoxIcon />
-              ) : (
-                <View style={styles.showFileBorder}></View>
-              )}
-              <Text style={styles.showFileText}>Дізнатися точну вартість</Text>
-            </TouchableOpacity>
             <Text style={styles.showFileDesc}>
               Для детальної оцінки надішліть фото піддонів та вкажіть адресу.
             </Text>
 
-            {isShowFileInput ? (
-              <View style={styles.fileInput}>
-                <TouchableOpacity
-                  style={styles.fileInputButton}
-                  onPress={selectFile}
-                >
-                  <FileIcon />
-                  <Text style={styles.fileInputButtonText}>
-                    Прикріпити файл
-                  </Text>
-                </TouchableOpacity>
+            <View style={styles.fileInput}>
+              <TouchableOpacity
+                style={styles.fileInputButton}
+                onPress={selectFile}
+              >
+                <FileIcon />
+                <Text style={styles.fileInputButtonText}>Прикріпити файл</Text>
+              </TouchableOpacity>
 
-                {selectCurrentImage === "" ? (
-                  <></>
-                ) : (
-                  <Image
-                    source={{ uri: selectCurrentImage }}
-                    style={{ width: 200, height: 200, marginTop: 20 }}
-                    resizeMode="contain"
-                  />
-                )}
-                <TextInput
-                  placeholder="Вказати адресу"
-                  style={styles.fileInputAddress}
-                  value={inputAddress}
-                  onChangeText={(value) => setInputAddress(value)}
-                />
-              </View>
-            ) : (
-              <></>
-            )}
+              {selectCurrentImage.length === 0 ? (
+                <></>
+              ) : (
+                <>
+                  {selectCurrentImage.map((item, index) => (
+                    <Image
+                      key={index}
+                      source={{ uri: item }}
+                      style={{ width: 200, height: 200, marginTop: 20 }}
+                      resizeMode="contain"
+                    />
+                  ))}
+                </>
+              )}
+              <TextInput
+                placeholder="Вказати адресу"
+                style={styles.fileInputAddress}
+                value={inputAddress}
+                onChangeText={(value) => setInputAddress(value)}
+                ref={inputAddressRef}
+                onFocus={() => {
+                  if (inputAddressRef.current) {
+                    inputAddressRef.current.measureLayout(
+                      scrollViewRef.current,
+                      (x, y) => {
+                        scrollViewRef.current.scrollTo({
+                          y: y,
+                          animated: true,
+                        });
+                      }
+                    );
+                  }
+                }}
+              />
+            </View>
           </View>
 
           <View style={styles.acceptButtonWrapper}>
-            <TouchableOpacity style={styles.acceptButton} onPress={submitFetch}>
-              <Text style={styles.acceptButtonText}>
-                Отримати швидку відповідь
+            <View style={{ marginBottom: 20 }}>
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: "500",
+                  color: "#49454F",
+                  textAlign: "center",
+                  marginBottom: 5,
+                  textTransform: "uppercase",
+                }}
+              >
+                Орієнтована вартість
               </Text>
+              <Text
+                style={{
+                  fontSize: 15,
+                  fontWeight: "500",
+                  color: "#F40000",
+                  textAlign: "center",
+                  marginBottom: 5,
+                }}
+              >
+                {searchPrice()}
+              </Text>
+            </View>
+            <TouchableOpacity style={styles.acceptButton} onPress={submitFetch}>
+              <Text style={styles.acceptButtonText}>Отримати точну ціну</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>

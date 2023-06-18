@@ -5,6 +5,7 @@ import {
   StatusBar,
   TouchableOpacity,
   RefreshControl,
+  Linking,
 } from "react-native";
 import styles from "../style/profile";
 import Logo from "../components/Logo";
@@ -27,49 +28,57 @@ const menuData = [
     image: "order",
     path: "profile/order",
     important: false,
+    globalLink: false,
   },
   {
     title: "Сповіщення",
     image: "notification",
     path: "profile/notification",
     important: false,
+    globalLink: false,
   },
   {
     title: "Партнерська програма",
     image: "partner",
     path: "profile/partner",
     important: false,
+    globalLink: false,
   },
   {
     title: "Пропозиції від компанії",
     image: "offer",
     path: "profile/offer",
     important: false,
+    globalLink: false,
   },
   {
     title: "Бонусний рахунок",
     image: "bonus",
     path: "bonus",
     important: false,
+    globalLink: false,
   },
   {
     title: "Інформація",
     image: "info",
     path: "profile/info",
     important: false,
+    globalLink: false,
   },
   {
     title: "Викуп віддонів",
     image: "deposit",
-    path: "",
+    path: "buyout",
     important: false,
+    globalLink: false,
   },
 
   {
     title: "БОТ ПАЛЕТНИЙ ДВІР",
     image: "bot",
-    path: "",
+    path: "https://t.me/PalletDvir_bot",
     important: true,
+    globalLink: true,
   },
 ];
 
@@ -77,7 +86,6 @@ const Profile = () => {
   const isFocusScreen = useIsFocused();
   const [refresh, setRefresh] = useState(false);
   const navigation = useNavigation();
-  const [requestEffect, setRequestEffect] = useState(false);
   const [data, setData] = useState({
     _id: "",
     birthday: "",
@@ -103,8 +111,21 @@ const Profile = () => {
     setData(dataFetch);
   };
 
+  const [basketScore, setBasketScore] = useState(0);
+  const getBasket = async () => {
+    AsyncStorage.getItem("basket").then((value) => {
+      if (!value) return;
+      const result = JSON.parse(value);
+      setBasketScore(result.length);
+    });
+  };
+
   useEffect(() => {
     verifyFun();
+
+    if (isFocusScreen) {
+      getBasket();
+    }
   }, [isFocusScreen]);
 
   return (
@@ -121,7 +142,6 @@ const Profile = () => {
         <TouchableOpacity
           style={styles.info}
           onPress={() => {
-            setRequestEffect(false);
             navigation.navigate("profile/data");
           }}
         >
@@ -133,30 +153,57 @@ const Profile = () => {
         </TouchableOpacity>
 
         <View style={styles.menu}>
-          {menuData.map((item, index) => (
-            <TouchableOpacity
-              activeOpacity={0.5}
-              style={styles.menuItem}
-              key={index}
-              onPress={() => {
-                setRequestEffect(false);
-                navigation.navigate(item.path);
-              }}
-            >
-              <View style={styles.menuItemImg}>
-                <ProfileIcons name={item.image} />
-              </View>
-              <Text
-                style={
-                  item.important
-                    ? styles.menuItemTextImportant
-                    : styles.menuItemText
-                }
-              >
-                {item.title}
-              </Text>
-            </TouchableOpacity>
-          ))}
+          {menuData.map((item, index) => {
+            if (item.globalLink) {
+              return (
+                <TouchableOpacity
+                  activeOpacity={0.5}
+                  style={styles.menuItem}
+                  key={index}
+                  onPress={() => {
+                    Linking.openURL(item.path);
+                  }}
+                >
+                  <View style={styles.menuItemImg}>
+                    <ProfileIcons name={item.image} />
+                  </View>
+                  <Text
+                    style={
+                      item.important
+                        ? styles.menuItemTextImportant
+                        : styles.menuItemText
+                    }
+                  >
+                    {item.title}
+                  </Text>
+                </TouchableOpacity>
+              );
+            } else {
+              return (
+                <TouchableOpacity
+                  activeOpacity={0.5}
+                  style={styles.menuItem}
+                  key={index}
+                  onPress={() => {
+                    navigation.navigate(item.path);
+                  }}
+                >
+                  <View style={styles.menuItemImg}>
+                    <ProfileIcons name={item.image} />
+                  </View>
+                  <Text
+                    style={
+                      item.important
+                        ? styles.menuItemTextImportant
+                        : styles.menuItemText
+                    }
+                  >
+                    {item.title}
+                  </Text>
+                </TouchableOpacity>
+              );
+            }
+          })}
           <TouchableOpacity
             activeOpacity={0.5}
             style={styles.menuItem}
@@ -172,7 +219,7 @@ const Profile = () => {
           </TouchableOpacity>
         </View>
       </ScrollView>
-      <Navigation active="profile" />
+      <Navigation active="profile" scoreBasket={basketScore} />
       <StatusBar barStyle="dark-content" />
     </>
   );

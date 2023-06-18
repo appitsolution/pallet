@@ -22,9 +22,9 @@ const profileDataStyle = StyleSheet.create({
       zIndex: 3,
     };
   },
-  data: {
-    marginTop: 30,
-  },
+  // data: {
+  //   // marginTop: 30,
+  // },
 
   dataButton: {
     flexDirection: "row",
@@ -110,9 +110,11 @@ const profileDataStyle = StyleSheet.create({
     textTransform: "uppercase",
     color: "rgba(244, 0, 0, 0.74)",
   },
-  backdrop: (active) => {
+  backdrop: (active = false) => {
     return {
       position: "absolute",
+      top: 0,
+      left: 0,
       display: active ? "flex" : "none",
       backgroundColor: "rgba(0, 0, 0, 0.7)",
       width: "100%",

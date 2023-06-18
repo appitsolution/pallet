@@ -9,18 +9,36 @@ import {
 import Navigation from "../../../components/Navigation";
 import { StatusBar } from "react-native";
 import styles from "../../../style/profile/profile-offer";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import BackCatalog from "../../../assets/Icons/BackCatalog";
 import {} from "react";
 
 const ProfileOfferReferral = () => {
   const navigation = useNavigation();
+  const route = useRoute();
+  const prevScreenReturn = () => {
+    let prevScreenPath = "";
+    if (route.params !== undefined) {
+      if (
+        route.params.prevScreen !== undefined &&
+        route.params.prevScreen !== ""
+      ) {
+        prevScreenPath = route.params.prevScreen;
+        return true;
+      }
+    }
+    return false;
+  };
   return (
     <>
       <View>
         <TouchableOpacity
           style={styles.back}
-          onPress={() => navigation.navigate("profile/offer")}
+          onPress={() =>
+            navigation.navigate(
+              prevScreenReturn() ? route.params.prevScreen : "profile/offer"
+            )
+          }
         >
           <View style={{ flexDirection: "row" }}>
             <BackCatalog />

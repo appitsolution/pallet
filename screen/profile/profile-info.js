@@ -12,31 +12,31 @@ const infoMenuData = [
   },
   {
     title: "Наші офіси ",
-    path: "",
+    path: "profile/info/office",
   },
   {
     title: "Поставка палет",
-    path: "",
+    path: "profile/info/supply",
   },
   {
     title: "Викуп піддонів",
-    path: "",
+    path: "profile/info/buyout",
   },
   {
     title: "Доставка та оплата",
-    path: "",
+    path: "profile/info/delivery",
   },
   {
     title: "Партнерська програма ",
-    path: "",
+    path: "profile/partner",
   },
   {
     title: "Тренди індустрії тари і упаковки ",
-    path: "",
+    path: "profile/info/trend",
   },
   {
     title: "Подарунки для вашого колективу",
-    path: "",
+    path: "profile/offer/gift",
   },
 ];
 

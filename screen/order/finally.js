@@ -23,7 +23,7 @@ const OrderSelectFinally = () => {
 
   const getOrder = async () => {
     const getDataOrder = await AsyncStorage.getItem("orderData");
-
+    console.log(JSON.parse(getDataOrder));
     setDataOrder(JSON.parse(getDataOrder));
     await AsyncStorage.setItem("basket", JSON.stringify([]));
   };
@@ -58,7 +58,12 @@ const OrderSelectFinally = () => {
       </View>
 
       <View style={styles.orderFinallyWrapper}>
-        <TouchableOpacity style={styles.orderFinally}>
+        <TouchableOpacity
+          style={styles.orderFinally}
+          onPress={() =>
+            navigation.navigate("profile/order/details", { id: dataOrder.id })
+          }
+        >
           <View style={styles.orderFinallyBlock}>
             <Text style={styles.orderFinallyNumber}>
               № {dataOrder ? addDashEveryThirdCharacter(dataOrder.id) : ""}
@@ -71,6 +76,28 @@ const OrderSelectFinally = () => {
             <Text style={styles.orderFinallyNotificationText}>
               Нове замовлення
             </Text>
+          </View>
+          <View style={styles.orderFinallyProductsBlock}>
+            {dataOrder ? (
+              <>
+                {dataOrder.products.map((item) => (
+                  <View style={styles.orderFinallyProducts}>
+                    <View style={styles.orderFinallyProductsTitle}>
+                      <Text style={styles.orderFinallyNotificationText}>
+                        {item.name}
+                      </Text>
+                    </View>
+                    <View style={styles.orderFinallyProductsTitle}>
+                      <Text style={styles.orderFinallyNotificationText}>
+                        {item.score}
+                      </Text>
+                    </View>
+                  </View>
+                ))}
+              </>
+            ) : (
+              <></>
+            )}
           </View>
         </TouchableOpacity>
       </View>

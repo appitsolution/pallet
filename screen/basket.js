@@ -10,15 +10,16 @@ import {
 import Navigation from "../components/Navigation";
 import catalog from "../assets/catalog.png";
 import CloseBasket from "../assets/Icons/CloseBasket";
-import { useNavigation } from "@react-navigation/native";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
 import styles from "../style/basket";
 import BasketNull from "../assets/Icons/BasketNull";
 import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SERVER_ADMIN } from "@env";
 
-const Basket = () => {
+const Basket = ({ refresh = false }) => {
   const navigation = useNavigation();
+  const isFocusedScreen = useIsFocused();
   const [basketData, setBasketData] = useState([]);
   const [test, setTest] = useState("");
 
@@ -28,7 +29,17 @@ const Basket = () => {
       const result = JSON.parse(value);
       setBasketData(result);
     });
-  });
+  }, [refresh]);
+
+  useEffect(() => {
+    if (isFocusedScreen) {
+      AsyncStorage.getItem("basket").then((value) => {
+        if (!value) return;
+        const result = JSON.parse(value);
+        setBasketData(result);
+      });
+    }
+  }, [isFocusedScreen]);
 
   const deleteBasket = async (id) => {
     const basket = await AsyncStorage.getItem("basket");
@@ -83,7 +94,7 @@ const Basket = () => {
                       <View style={styles.basketContentBonus}>
                         <View style={styles.basketContentBonusBlock}>
                           <Text style={styles.basketContentBonusScore}>
-                            + {String(Number(item.score) * 5)}{" "}
+                            + {String(Number(item.score) * 1)}{" "}
                           </Text>
                           <Text style={styles.basketContentBonusText}>
                             балів
@@ -150,8 +161,9 @@ const Basket = () => {
         </ScrollView>
       </View>
 
-      <StatusBar barStyle="dark-content" />
       <Navigation active="shop" scoreBasket={basketData.length} />
+
+      <StatusBar barStyle="dark-content" />
     </>
   );
 };

@@ -24,22 +24,42 @@ const Login = () => {
   const [passwordError, setPasswordError] = useState(false);
   const [messageError, setMessageError] = useState(false);
 
-  const loginRequest = async () => {
-    if (login === "") {
-      setLoginError(true);
-    }
-    if (password === "") {
-      setPasswordError(true);
-    }
-    if (!login || !password) return;
+  const loginRequest = async (login, password) => {
     try {
       const result = await axios.post(`${SERVER}/auth/login`, {
         login,
         password,
       });
-      // console.log(result.data);
+
+      let prevScreenPath = "";
+      if (route.params !== undefined) {
+        if (
+          route.params.prevScreen !== undefined &&
+          route.params.prevScreen !== ""
+        ) {
+          prevScreenPath = route.params.prevScreen;
+        }
+      }
+
+      if (result.data.status === "not active") {
+        await AsyncStorage.setItem(
+          "accept-phone-data",
+          JSON.stringify({
+            login: login,
+            phone: result.data.phone,
+            password: password,
+            prevScreen: prevScreenPath,
+          })
+        );
+
+        return navigation.navigate("accept-phone");
+      }
+
       if (result.data.status === "ok") {
         // console.log(result.data);
+        setLogin("");
+        setPassword("");
+
         await AsyncStorage.setItem("token", result.data.token);
         if (route.params !== undefined) {
           if (
@@ -57,6 +77,39 @@ const Login = () => {
       }
     } catch (err) {
       console.log(err);
+    }
+  };
+
+  const validNumber = () => {
+    const isValid = /^(0|\+?380)9\d{8}$/.test(login);
+    if (isValid) {
+      if (login.length === 10) {
+        return `+38${login}`;
+      } else if (login.length === 12) {
+        return `+${login}`;
+      }
+
+      setLoginError(false);
+    } else {
+      setLoginError(true);
+      return "error";
+    }
+  };
+
+  const midRequest = async () => {
+    if (login === "") {
+      setLoginError(true);
+    }
+    if (password === "") {
+      setPasswordError(true);
+    }
+    if (!login || !password) return;
+    if (!login.includes("@")) {
+      const phone = validNumber();
+      if (phone === "error") return;
+      loginRequest(phone, password);
+    } else {
+      loginRequest(login, password);
     }
   };
 
@@ -145,7 +198,7 @@ const Login = () => {
             )}
           </View>
 
-          <TouchableOpacity style={styles.submit} onPress={loginRequest}>
+          <TouchableOpacity style={styles.submit} onPress={midRequest}>
             <Text style={styles.submitText}>Увійти</Text>
           </TouchableOpacity>
         </View>

@@ -54,8 +54,8 @@ const OrderSelectDate = () => {
 
   const formatDate = (dateString) => {
     const date = moment(dateString).locale("uk");
-    console.log(date.format("ddd, MMMM YYYY"));
-    return date.format("ddd, MMMM YYYY");
+    console.log(date.format("YYYY.MM.DD"));
+    return date.format("YYYY.MM.DD");
   };
 
   function generateNumber() {
@@ -82,17 +82,34 @@ const OrderSelectDate = () => {
       month = "0" + month;
     }
 
-    var formattedDate = year + "-" + month + "-" + day;
+    var formattedDate = year + "." + month + "." + day;
 
     return formattedDate;
   };
 
   const responseOrder = async () => {
     const fetchOrderData = await AsyncStorage.getItem("orderData");
+    const fetchOrderDataJSON = JSON.parse(fetchOrderData);
 
-    console.log(`Suka: ${SERVER}`);
-    await axios.post(`${SERVER}/auth/create/order`, {
-      ...JSON.parse(fetchOrderData),
+    const result = await axios.post(`${SERVER}/auth/create/order`, {
+      ...fetchOrderDataJSON,
+    });
+
+    let bonusSum = 0;
+
+    fetchOrderDataJSON.products.forEach((item) => {
+      bonusSum += Number(item.score);
+    });
+
+    await axios.post(`${SERVER}/auth/bonus/order`, {
+      id: fetchOrderDataJSON.id,
+      idUser: fetchOrderDataJSON.idUser,
+      title: "Замовлення",
+      date: fetchOrderDataJSON.dateCreate,
+      order: String(bonusSum),
+      bonus: `+${bonusSum * 1}`,
+      bonusType: "plus",
+      type: "order",
     });
   };
 

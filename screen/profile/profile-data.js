@@ -1,15 +1,7 @@
-import {
-  View,
-  Text,
-  StatusBar,
-  TouchableOpacity,
-  TextInput,
-} from "react-native";
+import { View, Text, StatusBar, TouchableOpacity } from "react-native";
 import { useState, useEffect } from "react";
-import { ScrollView } from "react-native";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import axios from "axios";
-
 import Navigation from "../../components/Navigation";
 import styles from "../../style/profile/profile-data";
 import BackCatalog from "../../assets/Icons/BackCatalog";
@@ -18,6 +10,7 @@ import ChangePassword from "../../components/profile/ChangePassword";
 import ProfileDataComponent from "../../components/profile/ProfileData";
 import useVerify from "../../components/hook/useVerify";
 import { SERVER } from "@env";
+import ChangeProfileDataComponent from "../../components/profile/ChangeProfileData";
 
 const ProfileData = () => {
   const [isShowPassModal, setIsShowPassModal] = useState(false);
@@ -82,41 +75,20 @@ const ProfileData = () => {
     });
   };
 
-  const changeData = async () => {
+  const changePassword = async (value) => {
     try {
-      await axios.post(`${SERVER}/auth/change/data`, {
-        ...dataInput,
-        id: data._id,
-      });
-      verifyFun();
-      setShowChangeData(false);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  const changeDelivery = async () => {
-    try {
-      const result = await axios.post(`${SERVER}/auth/change/delivery`, {
-        ...deliveryInput,
-        id: data._id,
-      });
-      verifyFun();
-      setShowChangeAddress(false);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  const changePassword = (value) => {
-    try {
-      axios.post(`${SERVER}/auth/change/password`, {
+      const result = await axios.post(`${SERVER}/auth/change/password`, {
         id: data._id,
         currentPassword: value.currentPassword,
         newPassword: value.newPassword,
       });
+
+      if (result.data.code === 401) {
+        return result.data;
+      }
       setIsShowPassModal(false);
       verifyFun();
+      return result.data;
     } catch (err) {
       console.log(err);
     }
@@ -128,7 +100,12 @@ const ProfileData = () => {
 
   return (
     <>
-      <View style={{ paddingBottom: 220 }}>
+      <View
+        style={{
+          paddingBottom: 220,
+          height: "100%",
+        }}
+      >
         <TouchableOpacity
           style={styles.back}
           onPress={() => {
@@ -139,188 +116,7 @@ const ProfileData = () => {
           <Text style={styles.backText}>Особистий кабінет</Text>
         </TouchableOpacity>
 
-        <View
-          style={styles.positionWrapper(showChangeData || showChangeAddress)}
-        >
-          <TouchableOpacity
-            style={styles.back}
-            onPress={() => {
-              navigation.navigate("profile");
-            }}
-          >
-            <BackCatalog />
-            <Text style={styles.backText}>Особистий кабінет</Text>
-          </TouchableOpacity>
-
-          {showChangeData ? (
-            <View style={styles.data}>
-              <TouchableOpacity
-                style={styles.dataButton}
-                onPress={() => {
-                  setShowChangeData(!showChangeData);
-                }}
-              >
-                <Text style={styles.dataButtonText}>Особисті дані</Text>
-                <ChangeIcon />
-              </TouchableOpacity>
-              {showChangeData ? (
-                <View style={styles.wrapperBlock}>
-                  <View style={styles.inputWrapper}>
-                    <Text style={styles.inputPlaceholder}>Ваше ім’я</Text>
-                    <TextInput
-                      style={styles.input}
-                      value={dataInput.firstName}
-                      onChangeText={(value) => {
-                        setDataInput({ ...dataInput, firstName: value });
-                      }}
-                    />
-                  </View>
-                  <View style={styles.inputWrapper}>
-                    <Text style={styles.inputPlaceholder}>Прізвище</Text>
-                    <TextInput
-                      style={styles.input}
-                      value={dataInput.lastName}
-                      onChangeText={(value) =>
-                        setDataInput({ ...dataInput, lastName: value })
-                      }
-                    />
-                  </View>
-                  <View style={styles.inputWrapper}>
-                    <Text style={styles.inputPlaceholder}>Дата народження</Text>
-                    <TextInput
-                      style={styles.input}
-                      value={dataInput.birthday}
-                      onChangeText={(value) =>
-                        setDataInput({ ...dataInput, birthday: value })
-                      }
-                    />
-                  </View>
-                  <View style={styles.inputWrapper}>
-                    <Text style={styles.inputPlaceholder}>Телефон</Text>
-                    <TextInput
-                      style={styles.input}
-                      value={dataInput.phone}
-                      onChangeText={(value) =>
-                        setDataInput({ ...dataInput, phone: value })
-                      }
-                    />
-                  </View>
-                  <View style={styles.inputWrapper}>
-                    <Text style={styles.inputPlaceholder}>Ел. почта</Text>
-                    <TextInput
-                      style={styles.input}
-                      value={dataInput.email}
-                      onChangeText={(value) =>
-                        setDataInput({ ...dataInput, email: value })
-                      }
-                    />
-                  </View>
-                  <TouchableOpacity
-                    style={styles.saveButton}
-                    onPress={changeData}
-                  >
-                    <Text style={styles.saveButtonText}>Зберегти</Text>
-                  </TouchableOpacity>
-                </View>
-              ) : (
-                <></>
-              )}
-            </View>
-          ) : (
-            <></>
-          )}
-
-          {showChangeAddress ? (
-            <View style={styles.address}>
-              <TouchableOpacity
-                style={styles.dataButton}
-                onPress={() => setShowChangeAddress(!showChangeAddress)}
-              >
-                <Text style={styles.dataButtonText}>Адреса доставки</Text>
-                <ChangeIcon />
-              </TouchableOpacity>
-
-              <View style={styles.wrapperBlock}>
-                <View style={styles.inputWrapper}>
-                  <Text style={styles.inputPlaceholder}>Область</Text>
-                  <TextInput
-                    style={styles.input}
-                    onChangeText={(value) =>
-                      setDeliveryInput({
-                        ...deliveryInput,
-                        region: value,
-                      })
-                    }
-                    value={deliveryInput.region}
-                  />
-                </View>
-                <View style={styles.inputWrapper}>
-                  <Text style={styles.inputPlaceholder}>
-                    Місто або населений пункт
-                  </Text>
-                  <TextInput
-                    style={styles.input}
-                    onChangeText={(value) =>
-                      setDeliveryInput({
-                        ...deliveryInput,
-                        city: value,
-                      })
-                    }
-                    value={deliveryInput.city}
-                  />
-                </View>
-                <View style={styles.inputWrapper}>
-                  <Text style={styles.inputPlaceholder}>Вулиця</Text>
-                  <TextInput
-                    style={styles.input}
-                    onChangeText={(value) =>
-                      setDeliveryInput({
-                        ...deliveryInput,
-                        street: value,
-                      })
-                    }
-                    value={deliveryInput.street}
-                  />
-                </View>
-                <View style={styles.inputWrapper}>
-                  <Text style={styles.inputPlaceholder}>Номер будинку</Text>
-                  <TextInput
-                    style={styles.input}
-                    onChangeText={(value) =>
-                      setDeliveryInput({
-                        ...deliveryInput,
-                        house: value,
-                      })
-                    }
-                    value={deliveryInput.house}
-                  />
-                </View>
-                <View style={styles.inputWrapper}>
-                  <Text style={styles.inputPlaceholder}>Почтовий індекс</Text>
-                  <TextInput
-                    style={styles.input}
-                    onChangeText={(value) =>
-                      setDeliveryInput({
-                        ...deliveryInput,
-                        index: value,
-                      })
-                    }
-                    value={deliveryInput.index}
-                  />
-                </View>
-                <TouchableOpacity
-                  style={styles.saveButton}
-                  onPress={changeDelivery}
-                >
-                  <Text style={styles.saveButtonText}>Зберегти</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          ) : (
-            <></>
-          )}
-        </View>
-        <View style={styles.data}>
+        <View>
           <TouchableOpacity
             style={styles.dataButton}
             onPress={() => setShowChangeData(!showChangeData)}
@@ -349,11 +145,26 @@ const ProfileData = () => {
           <Text style={styles.changePasswordText}>Змінити пароль</Text>
         </TouchableOpacity>
       </View>
+
       <ChangePassword
         show={isShowPassModal}
         showFunc={setIsShowPassModal}
         changePassword={changePassword}
       />
+
+      <ChangeProfileDataComponent
+        data={data}
+        verifyFun={verifyFun}
+        showChangeData={showChangeData}
+        setShowChangeData={setShowChangeData}
+        setShowChangeAddress={setShowChangeAddress}
+        showChangeAddress={showChangeAddress}
+        dataInput={dataInput}
+        setDataInput={setDataInput}
+        deliveryInput={deliveryInput}
+        setDeliveryInput={setDeliveryInput}
+      />
+
       <Navigation active="profile" />
       <StatusBar barStyle="dark-content" />
     </>

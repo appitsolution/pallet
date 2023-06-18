@@ -120,7 +120,7 @@ const OrderAccept = () => {
                         <View style={styles.basketContentBonus}>
                           <View style={styles.basketContentBonusBlock}>
                             <Text style={styles.basketContentBonusScore}>
-                              + {String(Number(item.score) * 5)}{" "}
+                              + {String(Number(item.score) * 1)}{" "}
                             </Text>
                             <Text style={styles.basketContentBonusText}>
                               балів

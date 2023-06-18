@@ -1,23 +1,15 @@
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, Keyboard } from "react-native";
 import MenuIcons from "../assets/Icons/MenuIcons";
 import { useNavigation } from "@react-navigation/native";
 import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import useVerify from "./hook/useVerify";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 const Navigation = ({ active = "", scoreBasket = 0 }) => {
-  const navigation = useNavigation();
-  const [basketScore, setBasketScore] = useState(0);
+  const [hiddenMenu, setHiddenMenu] = useState(false);
 
-  useEffect(() => {
-    if (active === "shop") {
-      AsyncStorage.getItem("basket").then((value) => {
-        if (!value) return;
-        const result = JSON.parse(value);
-        setBasketScore(result.length);
-      });
-    }
-  }, []);
+  const navigation = useNavigation();
 
   const verifyFun = async (path) => {
     const { verify, dataFetch } = await useVerify();
@@ -29,6 +21,19 @@ const Navigation = ({ active = "", scoreBasket = 0 }) => {
     }
   };
 
+  const checkKeyboard = () => {
+    Keyboard.addListener("keyboardDidShow", () => {
+      setHiddenMenu(true);
+    });
+    Keyboard.addListener("keyboardDidHide", () => {
+      setHiddenMenu(false);
+    });
+  };
+
+  useEffect(() => {
+    checkKeyboard();
+  }, []);
+
   return (
     <View
       style={{
@@ -38,7 +43,7 @@ const Navigation = ({ active = "", scoreBasket = 0 }) => {
         bottom: 0,
         left: 0,
         backgroundColor: "#ffffff",
-        zIndex: 2,
+        zIndex: 3,
         paddingBottom: 40,
 
         elevation: 5,
@@ -65,6 +70,7 @@ const Navigation = ({ active = "", scoreBasket = 0 }) => {
         },
         shadowOpacity: 0.2,
         shadowRadius: 5,
+        display: hiddenMenu ? "none" : "flex",
       }}
     >
       <View
@@ -121,7 +127,7 @@ const Navigation = ({ active = "", scoreBasket = 0 }) => {
             {scoreBasket !== 0 ? (
               <View
                 style={{
-                  display: active === "shop" ? "flex" : "none",
+                  display: "flex",
                   position: "absolute",
                   top: -5,
                   right: -15,

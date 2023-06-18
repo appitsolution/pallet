@@ -1,6 +1,6 @@
 import { useEffect } from "react";
-import { StyleSheet, View, StatusBar } from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
+import { StyleSheet, AppState } from "react-native";
+import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import {
   createStackNavigator,
   CardStyleInterpolators,
@@ -36,7 +36,20 @@ import OrderSelectDate from "./screen/order/select-date";
 import OrderSelectFinally from "./screen/order/finally";
 import Buyout from "./screen/buyout";
 import BuyoutResult from "./screen/buyout-result";
-import Test from "./screen/Test";
+// import Test from "./screen/Test";
+import AcceptPhone from "./screen/accept-phone";
+import TabNavigator from "./screen/Test";
+import useSaveScreen from "./components/hook/useSaveScreen";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import {
+  setNavigationRef,
+  navigateToScreen,
+} from "./components/hook/navigationRef";
+import ProfileInfoOffice from "./screen/profile/info/office";
+import ProfileInfoSupply from "./screen/profile/info/supply";
+import ProfileInfoDelivery from "./screen/profile/info/delivery";
+import ProfileInfoBuyout from "./screen/profile/info/buyout";
+import ProfileInfoTrend from "./screen/profile/info/trend";
 
 const Stack = createStackNavigator();
 
@@ -52,15 +65,32 @@ export default function App() {
     return null;
   }
 
+  const handleAppStateChange = async (nextAppState) => {
+    if (nextAppState === "active") {
+      const currentScreen = await AsyncStorage.getItem("currentScreen");
+      navigateToScreen(currentScreen);
+    }
+  };
+
+  AppState.addEventListener("change", handleAppStateChange);
+
   return (
-    <NavigationContainer>
+    <NavigationContainer
+      onStateChange={(value) => {
+        AsyncStorage.setItem(
+          "currentScreen",
+          value.routes[value.routes.length - 1].name
+        );
+      }}
+      ref={setNavigationRef}
+    >
       <Stack.Navigator
         screenOptions={{
           cardStyle: {
             backgroundColor: "#ffffff",
           },
         }}
-        initialRouteName="register"
+        initialRouteName="home"
       >
         <Stack.Screen
           name="home"
@@ -71,9 +101,19 @@ export default function App() {
             cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
           }}
         />
+
+        {/* <Stack.Screen
+          name="test33"
+          component={Test33}
+          options={{
+            animationEnabled: true,
+            headerShown: false,
+            cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+          }}
+        /> */}
         {/* <Stack.Screen
           name="test"
-          component={Test}
+          component={TabNavigator}
           options={{
             animationEnabled: true,
             headerShown: false,
@@ -110,6 +150,15 @@ export default function App() {
         <Stack.Screen
           name="register"
           component={Register}
+          options={{
+            animationEnabled: false,
+            headerShown: false,
+          }}
+        />
+
+        <Stack.Screen
+          name="accept-phone"
+          component={AcceptPhone}
           options={{
             animationEnabled: false,
             headerShown: false,
@@ -237,6 +286,51 @@ export default function App() {
         <Stack.Screen
           name="profile/info/about"
           component={ProfileInfoAbout}
+          options={{
+            animationEnabled: true,
+            headerShown: false,
+            cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+          }}
+        />
+        <Stack.Screen
+          name="profile/info/office"
+          component={ProfileInfoOffice}
+          options={{
+            animationEnabled: true,
+            headerShown: false,
+            cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+          }}
+        />
+        <Stack.Screen
+          name="profile/info/supply"
+          component={ProfileInfoSupply}
+          options={{
+            animationEnabled: true,
+            headerShown: false,
+            cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+          }}
+        />
+        <Stack.Screen
+          name="profile/info/buyout"
+          component={ProfileInfoBuyout}
+          options={{
+            animationEnabled: true,
+            headerShown: false,
+            cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+          }}
+        />
+        <Stack.Screen
+          name="profile/info/delivery"
+          component={ProfileInfoDelivery}
+          options={{
+            animationEnabled: true,
+            headerShown: false,
+            cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+          }}
+        />
+        <Stack.Screen
+          name="profile/info/trend"
+          component={ProfileInfoTrend}
           options={{
             animationEnabled: true,
             headerShown: false,

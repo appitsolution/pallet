@@ -1,7 +1,7 @@
 import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import Navigation from "../../components/Navigation";
 import styles from "../../style/profile/profile-partner";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import BackCatalog from "../../assets/Icons/BackCatalog";
 import { StatusBar } from "react-native";
 
@@ -26,13 +26,31 @@ const partnerData = [
 
 const ProfilePartner = () => {
   const navigation = useNavigation();
+  const route = useRoute();
+  const prevScreenReturn = () => {
+    let prevScreenPath = "";
+    if (route.params !== undefined) {
+      if (
+        route.params.prevScreen !== undefined &&
+        route.params.prevScreen !== ""
+      ) {
+        prevScreenPath = route.params.prevScreen;
+        return true;
+      }
+    }
+    return false;
+  };
 
   return (
     <>
       <View>
         <TouchableOpacity
           style={styles.back}
-          onPress={() => navigation.navigate("profile")}
+          onPress={() =>
+            navigation.navigate(
+              prevScreenReturn() ? route.params.prevScreen : "profile"
+            )
+          }
         >
           <BackCatalog />
           <Text style={styles.backText}>Партнерська програма</Text>

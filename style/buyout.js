@@ -61,15 +61,30 @@ const buyoutStyle = StyleSheet.create({
   inputScoreWrapper: {
     paddingHorizontal: 12,
   },
-  inputScore: {
-    paddingVertical: 20,
-    paddingHorizontal: 50,
-    borderColor: "#F1F1F1",
-    borderWidth: 1,
-    borderRadius: 100,
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#000000",
+  inputScore: (error = false) => {
+    if (error) {
+      return {
+        paddingVertical: 20,
+        paddingHorizontal: 50,
+        borderColor: "#F40000",
+        borderWidth: 1,
+        borderRadius: 100,
+        fontSize: 14,
+        fontWeight: "600",
+        color: "#000000",
+      };
+    } else {
+      return {
+        paddingVertical: 20,
+        paddingHorizontal: 50,
+        borderColor: "#F1F1F1",
+        borderWidth: 1,
+        borderRadius: 100,
+        fontSize: 14,
+        fontWeight: "600",
+        color: "#000000",
+      };
+    }
   },
   bannerBonusWrapper: {
     paddingHorizontal: 24,
@@ -123,7 +138,7 @@ const buyoutStyle = StyleSheet.create({
 
   showFileWrapper: {
     paddingHorizontal: 40,
-    marginTop: 50,
+    marginTop: 15,
   },
   showFile: {
     flexDirection: "row",

@@ -397,6 +397,17 @@ const orderStyle = StyleSheet.create({
     fontWeight: "700",
     color: "#272727",
   },
+  orderFinallyProductsBlock: {
+    marginTop: 20,
+  },
+  orderFinallyProducts: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  orderFinallyProductsTitle: {
+    maxWidth: 200,
+  },
   orderButtonsWrapper: {
     paddingHorizontal: 8,
     marginTop: 50,

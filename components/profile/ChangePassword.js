@@ -3,23 +3,13 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  KeyboardAvoidingView,
   Keyboard,
 } from "react-native";
 import styles from "../../style/profile/profile-data";
 import CheckBoxIcon from "../../assets/Icons/CheckBoxIcon";
 import { useState } from "react";
-import * as yup from "yup";
 
-const validationSchema = yup.object().shape({
-  currentPassword: yup
-    .string()
-    .min(6, "Пароль должен содержать не менее 6 символов")
-    .required('Поле "Пароль" обязательно для заполнения'),
-  newPassword: yup
-    .string()
-    .required('Поле "Пароль" обязательно для заполнения'),
-});
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 const ChangePassword = ({ show = false, showFunc, changePassword }) => {
   const [isShowPass, setIsShowPass] = useState(false);
@@ -30,75 +20,72 @@ const ChangePassword = ({ show = false, showFunc, changePassword }) => {
     acceptPassword: "",
   });
 
-  const [currentPasswordError, setCurrentPassordError] = useState(false);
+  const [currentPasswordError, setCurrentPasswordError] = useState(false);
   const [newPasswordError, setNewPasswordError] = useState(false);
   const [acceptPasswordError, setAcceptPasswordError] = useState(false);
 
   const checkPassword = async () => {
-    try {
-      const result = await validationSchema.validate(
-        {
-          currentPassword: passwordInput.currentPassword,
-          newPassword: passwordInput.newPassword,
-        },
-        {
-          abortEarly: false,
-          context: {
-            changePassword,
-          },
-        }
-      );
+    const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}$/;
+    const passwordsError = {
+      currentPassword: false,
+      newPassword: false,
+      acceptPassword: false,
+    };
 
-      console.log(result);
-    } catch (err) {
-      const dataError = await JSON.stringify(err);
-
-      const result = JSON.parse(dataError);
-      // Если есть ошибки валидации, обработайте их здесь
-      result.inner.forEach((item) => {
-        if (item.path === "currentPassword") {
-          setCurrentPassordError(true);
-        } else if (item.path === "newPassword") {
-          setNewPasswordError(true);
-        } else if (item.path === "acceptPassword") {
-          setAcceptPasswordError(true);
-        }
-      });
+    if (passwordInput.currentPassword === "") {
+      setCurrentPasswordError(true);
+      passwordsError.currentPassword = true;
+    }
+    if (!passwordRegex.test(passwordInput.newPassword)) {
+      setNewPasswordError(true);
+      passwordsError.newPassword = true;
     }
 
-    return;
-    setIsShowPass(false);
-    showFunc(false);
-    Keyboard.dismiss();
+    if (passwordInput.newPassword !== passwordInput.acceptPassword) {
+      setAcceptPasswordError(true);
+      passwordsError.acceptPassword = true;
+    }
     if (
-      !passwordInput.acceptPassword ||
-      !passwordInput.currentPassword ||
-      !passwordInput.newPassword
+      passwordsError.acceptPassword ||
+      passwordsError.currentPassword ||
+      passwordsError.newPassword
     ) {
       return;
     }
-    if (passwordInput.newPassword !== passwordInput.acceptPassword) return;
 
-    changePassword(passwordInput);
+    const result = await changePassword(passwordInput);
+    console.log(result);
+    if (result.code === 401) {
+      return setCurrentPasswordError(true);
+    }
+    setPasswordInput({
+      newPassword: "",
+      currentPassword: "",
+      acceptPassword: "",
+    });
+    setIsShowPass(false);
+    showFunc(false);
+    Keyboard.dismiss();
   };
 
   return (
     <View style={styles.backdrop(show)}>
-      <KeyboardAvoidingView behavior="position">
-        <View style={styles.modal}>
+      <View style={styles.modal}>
+        <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
           <Text style={styles.title}>Змінити пароль</Text>
           <View style={styles.inputWrapper}>
             <Text style={styles.inputPlaceholder}>
               Існуючий або тимчасовий пароль
             </Text>
+
             <TextInput
               style={styles.input(currentPasswordError)}
               secureTextEntry={!isShowPass}
+              value={passwordInput.currentPassword}
               onChangeText={(value) =>
                 setPasswordInput({ ...passwordInput, currentPassword: value })
               }
-              value={passwordInput.currentPassword}
-              onFocus={() => setCurrentPassordError(false)}
+              onFocus={() => setCurrentPasswordError(false)}
             />
           </View>
           <View style={styles.inputWrapper}>
@@ -161,8 +148,8 @@ const ChangePassword = ({ show = false, showFunc, changePassword }) => {
               <Text style={styles.controlsButtonText}>Зберегти</Text>
             </TouchableOpacity>
           </View>
-        </View>
-      </KeyboardAvoidingView>
+        </KeyboardAwareScrollView>
+      </View>
     </View>
   );
 };

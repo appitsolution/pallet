@@ -59,6 +59,19 @@ const homeStyle = StyleSheet.create({
     justifyContent: "center",
     overflow: "hidden",
   },
+
+  bannerLastScore: {
+    fontSize: 12,
+    lineHeight: 18,
+    fontWeight: "500",
+    color: "#FFFFFF",
+  },
+  bannerLastScoreText: {
+    fontSize: 10,
+    lineHeight: 18,
+    fontWeight: "400",
+    color: "#F40000",
+  },
   tabs: {
     flexDirection: "row",
     width: "100%",

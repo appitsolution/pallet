@@ -6,6 +6,8 @@ import {
   ScrollView,
   Image,
   ImageBackground,
+  RefreshControl,
+  Animated,
 } from "react-native";
 import Logo from "../components/Logo";
 import Swiper from "react-native-swiper";
@@ -20,12 +22,14 @@ import slide1 from "../assets/images/slider/slide-1.jpg";
 import slide2 from "../assets/images/slider/slide-2.jpg";
 import slide3 from "../assets/images/slider/slide-3.jpg";
 import slide4 from "../assets/images/slider/slide-4.jpg";
-import bonus from "../assets/images/slider/bonus.jpg";
+import bonus from "../assets/images/slider/bonusScore.png";
 import { StatusBar } from "expo-status-bar";
 import axios from "axios";
 import { SERVER_ADMIN } from "@env";
 import useVerify from "../components/hook/useVerify";
 import { Circle } from "react-native-progress";
+import useSaveScreen from "../components/hook/useSaveScreen";
+import NoInternet from "../components/NoInternet";
 
 const slideData = [
   {
@@ -79,7 +83,31 @@ const slideData = [
 
 const Home = () => {
   const [testTab, setTestTab] = useState(true);
+  const [refresh, setRefresh] = useState(false);
+  const [bonusScore, setBonusScore] = useState("");
   const isFocusedScreen = useIsFocused();
+
+  const getBonus = async () => {
+    const request = await useVerify();
+    if (request.verify) {
+      if (request.dataFetch.bonus.bonusScore !== "0") {
+        setBonusScore(request.dataFetch.bonus.bonusScore);
+      } else {
+        setBonusScore("");
+      }
+    } else {
+      setBonusScore("");
+    }
+  };
+
+  const [basketScore, setBasketScore] = useState(0);
+  const getBasket = async () => {
+    AsyncStorage.getItem("basket").then((value) => {
+      if (!value) return;
+      const result = JSON.parse(value);
+      setBasketScore(result.length);
+    });
+  };
 
   const [catalogData, setCatalogData] = useState([]);
 
@@ -96,6 +124,7 @@ const Home = () => {
         "basket",
         JSON.stringify([{ ...findCatalog, score: "1" }])
       );
+      getBasket();
       return;
     }
 
@@ -107,6 +136,7 @@ const Home = () => {
         "basket",
         JSON.stringify([...basket, { ...findCatalog, score: "1" }])
       );
+      getBasket();
       return;
     } else {
       await AsyncStorage.setItem(
@@ -116,12 +146,14 @@ const Home = () => {
           { ...basketCurrent, score: String(Number(basketCurrent.score) + 1) },
         ])
       );
+      getBasket();
       return;
     }
   };
 
   const requestCatalog = async () => {
     try {
+      console.log(SERVER_ADMIN);
       const getCatalog = await axios.get(`${SERVER_ADMIN}/api/products`);
       setCatalogData(getCatalog.data.docs);
     } catch (err) {
@@ -155,9 +187,13 @@ const Home = () => {
   };
 
   useEffect(() => {
+    useSaveScreen(router.getState().routes[0].name);
+
     if (isFocusedScreen) {
+      getBasket();
       requestCatalog();
       requestSortButtons();
+      getBonus();
     }
   }, [isFocusedScreen]);
 
@@ -193,12 +229,29 @@ const Home = () => {
     setSortInput(value);
   };
 
+  const refreshRequest = async () => {
+    setRefresh(true);
+    await requestCatalog();
+    await requestSortButtons();
+    await getBasket();
+    await getBonus();
+    setRefresh(false);
+  };
+
   return (
     <>
       <View style={styles.home}>
         <ScrollView
           contentContainerStyle={styles.scrollViewContainer}
           showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={refresh}
+              colors={["#ff0000"]}
+              onRefresh={refreshRequest}
+              tintColor={"white"}
+            />
+          }
         >
           <Logo color="white" />
           <View style={styles.banner}>
@@ -210,7 +263,7 @@ const Home = () => {
               autoplay
             >
               {slideData.map((item) => {
-                if (item.bonus) {
+                if (item.bonus && bonusScore !== "") {
                   return (
                     <TouchableOpacity
                       onPress={async () => {
@@ -229,8 +282,20 @@ const Home = () => {
                       <View style={styles.bannerLast}>
                         <ImageBackground
                           source={bonus}
-                          style={{ width: "100%", height: "100%" }}
-                        ></ImageBackground>
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <Text style={styles.bannerLastScore}>
+                            {bonusScore} бонусов
+                          </Text>
+                          <Text style={styles.bannerLastScoreText}>
+                            на рахунку
+                          </Text>
+                        </ImageBackground>
                       </View>
                     </TouchableOpacity>
                   );
@@ -388,7 +453,9 @@ const Home = () => {
           </View>
         </ScrollView>
       </View>
-      <Navigation active="home" />
+
+      <Navigation active="home" scoreBasket={basketScore} />
+      <NoInternet requestFunction={refreshRequest} />
       <StatusBar style="light" />
     </>
   );

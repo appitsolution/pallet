@@ -10,6 +10,7 @@ import {
   KeyboardAvoidingView,
   StatusBar,
 } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import styles from "../style/register";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -29,14 +30,17 @@ const Register = () => {
   const [errorLastName, setErrorLastName] = useState(false);
   const [errorPhone, setErrorPhone] = useState(false);
   const [errorEmail, setErrorEmail] = useState(false);
+  const [errorEmailSuch, setErrorEmailSuch] = useState(false);
   const [errorPassord, setErrorPassword] = useState(false);
 
   const [testPhone, setTestPhone] = useState(false);
 
   const validNumber = () => {
-    const isValid = /^(0|\+?380)9\d{8}$/.test(phone);
+    console.log(phone);
+    const isValid = /^(0|\+?380)[976]\d{8}$/.test(phone);
     if (isValid) {
       if (phone.length === 10) {
+        console.log("suka");
         setPhone(`+38${phone}`);
       } else if (phone.length === 12) {
         setPhone(`+${phone}`);
@@ -87,6 +91,7 @@ const Register = () => {
       return setErrorPassword(true);
     }
 
+    console.log(SERVER);
     const result = await axios.post(`${SERVER}/auth/register`, {
       firstName,
       lastName,
@@ -94,24 +99,44 @@ const Register = () => {
       email,
       password,
     });
-    if (result.data.status !== "ok") {
-      return Alert.alert("Error", result.data.status);
-    }
-    const token = await axios.post(`${SERVER}/auth/login`, {
-      login: email,
-      password: password,
-    });
 
-    AsyncStorage.setItem("token", token.data.token);
+    if (result.data.code === 409) {
+      setErrorEmail(true);
+      setErrorEmailSuch(true);
+      return;
+    }
+    if (result.data.status !== "ok") {
+      console.log(result.data);
+      return;
+    }
+
+    let prevScreenPath = "";
     if (route.params !== undefined) {
       if (
-        route.params.prevScreen !== undefined ||
+        route.params.prevScreen !== undefined &&
         route.params.prevScreen !== ""
       ) {
-        return navigation.navigate(route.params.prevScreen);
+        prevScreenPath = route.params.prevScreen;
       }
     }
-    navigation.navigate("profile");
+
+    await AsyncStorage.setItem(
+      "accept-phone-data",
+      JSON.stringify({
+        login: email,
+        phone: phone,
+        password: password,
+        prevScreen: prevScreenPath,
+      })
+    );
+
+    navigation.navigate("accept-phone");
+
+    setFirstName("");
+    setLastName("");
+    setPhone("");
+    setEmail("");
+    setPassword("");
   };
 
   return (
@@ -164,85 +189,93 @@ const Register = () => {
             <Text style={styles.buttonTextActive}>Реєстрація</Text>
           </TouchableOpacity>
         </View>
-        <ScrollView>
+        <KeyboardAwareScrollView>
           <View style={styles.form}>
-            <KeyboardAvoidingView enabled behavior="position">
-              <View style={styles.formContainer}>
-                <View style={styles.formWrapper}>
-                  <Text style={styles.placeholder}>Ваше ім’я</Text>
-                  <TextInput
-                    style={styles.input(errorFirstName)}
-                    value={firstName}
-                    onChangeText={(value) => setFirstName(value)}
-                    onFocus={() => setErrorFirstName(false)}
-                  />
-                </View>
-                <View style={styles.formWrapper}>
-                  <Text style={styles.placeholder}>Прізвище</Text>
-                  <TextInput
-                    style={styles.input(errorLastName)}
-                    value={lastName}
-                    onChangeText={(value) => setLastName(value)}
-                    onFocus={() => setErrorLastName(false)}
-                  />
-                </View>
-                <View style={styles.formWrapper}>
-                  <Text style={styles.placeholder}>Телефон</Text>
-                  <TextInput
-                    style={styles.input(errorPhone)}
-                    value={phone}
-                    keyboardType="number-pad"
-                    onChangeText={(value) => setPhone(value)}
-                    onFocus={() => setErrorPhone(false)}
-                  />
-                </View>
-                <View style={styles.formWrapper}>
-                  <Text style={styles.placeholder}>Ел. почта</Text>
-                  <TextInput
-                    style={styles.input(errorEmail)}
-                    value={email}
-                    keyboardType="email-address"
-                    onChangeText={(value) => setEmail(value)}
-                    onFocus={() => setErrorEmail(false)}
-                  />
-                </View>
+            <View style={styles.formContainer}>
+              <View style={styles.formWrapper}>
+                <Text style={styles.placeholder}>Ваше ім’я</Text>
+                <TextInput
+                  style={styles.input(errorFirstName)}
+                  value={firstName}
+                  onChangeText={(value) => setFirstName(value)}
+                  onFocus={() => setErrorFirstName(false)}
+                  placeholder="Іван"
+                />
+              </View>
+              <View style={styles.formWrapper}>
+                <Text style={styles.placeholder}>Прізвище</Text>
+                <TextInput
+                  style={styles.input(errorLastName)}
+                  value={lastName}
+                  onChangeText={(value) => setLastName(value)}
+                  onFocus={() => setErrorLastName(false)}
+                  placeholder="Іванов"
+                />
+              </View>
+              <View style={styles.formWrapper}>
+                <Text style={styles.placeholder}>Телефон</Text>
+                <TextInput
+                  style={styles.input(errorPhone)}
+                  value={phone}
+                  keyboardType="number-pad"
+                  onChangeText={(value) => setPhone(value)}
+                  onFocus={() => setErrorPhone(false)}
+                  placeholder="380931234455"
+                />
+              </View>
+              <View style={styles.formWrapper}>
+                <Text style={styles.placeholder}>Ел. почта</Text>
+                <TextInput
+                  style={styles.input(errorEmail)}
+                  value={email}
+                  keyboardType="email-address"
+                  onChangeText={(value) => setEmail(value)}
+                  onFocus={() => {
+                    setErrorEmail(false);
+                    setErrorEmailSuch(false);
+                  }}
+                  placeholder="name@gmail.com"
+                />
 
-                <View style={styles.formWrapper}>
-                  <Text style={styles.placeholder}>Пароль</Text>
-                  <TextInput
-                    textContentType="password"
-                    style={styles.input(errorPassord)}
-                    value={password}
-                    secureTextEntry
-                    onChangeText={(value) => setPassword(value)}
-                    onFocus={() => setErrorPassword(false)}
-                  />
-                </View>
-
-                <Text style={styles.inputWarning}>
-                  Пароль повинен бути не менше 6 символів, містити цифри,
-                  латинські літери, в тому числі і великі, і не повинен
-                  збігатися з ім’ям та ел.почтою
-                </Text>
-
-                <TouchableOpacity
-                  style={styles.submit}
-                  onPress={registerRequest}
-                >
-                  <Text style={styles.submitText}>Зареєструватися</Text>
-                </TouchableOpacity>
+                {errorEmailSuch ? (
+                  <Text style={styles.textError}>Ця пошта зареєстрована</Text>
+                ) : (
+                  <></>
+                )}
               </View>
 
-              <View style={{ marginTop: 30 }}>
-                <Text style={styles.text}>Реєструючись ви погоджуєтесь з</Text>
-                <Text style={styles.linkText}>
-                  положенням про обробку і захист персональних даних та угодою
-                  користувача
-                </Text>
+              <View style={styles.formWrapper}>
+                <Text style={styles.placeholder}>Пароль</Text>
+                <TextInput
+                  textContentType="password"
+                  style={styles.input(errorPassord)}
+                  value={password}
+                  secureTextEntry
+                  onChangeText={(value) => setPassword(value)}
+                  onFocus={() => setErrorPassword(false)}
+                />
               </View>
-            </KeyboardAvoidingView>
+
+              <Text style={styles.inputWarning}>
+                Пароль повинен бути не менше 6 символів, містити цифри,
+                латинські літери, в тому числі і великі, і не повинен збігатися
+                з ім’ям та ел.почтою
+              </Text>
+
+              <TouchableOpacity style={styles.submit} onPress={registerRequest}>
+                <Text style={styles.submitText}>Зареєструватися</Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={{ marginTop: 30 }}>
+              <Text style={styles.text}>Реєструючись ви погоджуєтесь з</Text>
+              <Text style={styles.linkText}>
+                положенням про обробку і захист персональних даних та угодою
+                користувача
+              </Text>
+            </View>
           </View>
-        </ScrollView>
+        </KeyboardAwareScrollView>
       </View>
 
       <StatusBar barStyle="dark-content" />

@@ -17,18 +17,17 @@ import backgroundOrder from "../assets/images/backgroundOrderFinally.jpg";
 const BuyoutResult = () => {
   const isFocusedAccept = useIsFocused();
   const navigation = useNavigation();
-  const [dataOrder, setDataOrder] = useState(null);
+  const [dataBuyout, setDataBuyout] = useState(null);
 
-  const getOrder = async () => {
-    const getDataOrder = await AsyncStorage.getItem("orderData");
+  const getBuyout = async () => {
+    const getDataBuyout = await AsyncStorage.getItem("buyout");
 
-    setDataOrder(JSON.parse(getDataOrder));
-    await AsyncStorage.setItem("basket", JSON.stringify([]));
+    setDataBuyout(JSON.parse(getDataBuyout));
   };
 
   useEffect(() => {
     if (isFocusedAccept) {
-      getOrder();
+      getBuyout();
     }
   }, [isFocusedAccept]);
 
@@ -50,8 +49,7 @@ const BuyoutResult = () => {
 
       <View style={styles.messageFinally}>
         <Text style={styles.messageFinallyText}>
-          Наш менеджер зв’яжеться з Вами по телефону чи відправивши SMS або
-          Viber-повідомлення
+          Запит обробляється, протягом 5хв з вами звʼяжеться менеджер.
         </Text>
       </View>
 
@@ -63,7 +61,9 @@ const BuyoutResult = () => {
             обміняти за програмою лояльності{" "}
           </Text>
           <View style={styleBuyout.bannerBonusScoreWrapper}>
-            <Text style={styleBuyout.bannerBonusScore}>500</Text>
+            <Text style={styleBuyout.bannerBonusScore}>
+              {dataBuyout ? dataBuyout.score : ""}
+            </Text>
             <Text style={styleBuyout.bannerBonusScoreText}>бонусів</Text>
           </View>
         </View>

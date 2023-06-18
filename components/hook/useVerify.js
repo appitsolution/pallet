@@ -4,6 +4,7 @@ import { SERVER } from "@env";
 import axios from "axios";
 
 const useVerify = async () => {
+  console.log(SERVER);
   const token = await AsyncStorage.getItem("token");
 
   if (!token) {

@@ -1,5 +1,6 @@
 import styles from "../../style/profile/profile-data";
 import { View, Text } from "react-native";
+
 const ProfileDataComponent = ({ data }) => {
   return (
     <View style={styles.wrapperBlock}>

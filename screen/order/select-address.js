@@ -15,40 +15,70 @@ import MapView, { Marker } from "react-native-maps";
 import SearchIcon from "../../assets/Icons/SearchIcon";
 import { useEffect, useMemo, useState } from "react";
 import SelectAddressIcon from "../../assets/Icons/SelectAddressIcon";
+import axios from "axios";
+import { SERVER_ADMIN, GOOGLE_KEY } from "@env";
 
 const OrderSelectAddress = () => {
-  const isFocusedAccept = useIsFocused();
+  const isFocusedScreen = useIsFocused();
   const navigation = useNavigation();
   const [searchInput, setSearchInput] = useState("");
   const [focusSearch, setFocusSearch] = useState(false);
 
-  const region = {
+  const [region, setRegion] = useState({
     latitude: 50.2335773,
     longitude: 30.6236303,
-    latitudeDelta: 1.0122, // Масштаб по широте
-    longitudeDelta: 1.0421, // Масштаб по долготе
+    latitudeDelta: 1.9022, // Масштаб по широте
+    longitudeDelta: 1.3421, // Масштаб по долготе
+  });
+
+  const [addressData, setAddressData] = useState([]);
+
+  const getRegion = async () => {
+    const currentCity = await AsyncStorage.getItem("orderData");
+
+    const getRegion = await axios(
+      `https://maps.googleapis.com/maps/api/geocode/json?address=${
+        JSON.parse(currentCity).city
+      }&key=${GOOGLE_KEY}`
+    );
+
+    const getRegionGeo = getRegion.data.results[0].geometry.location;
+
+    setRegion({
+      latitude: getRegionGeo.lat,
+      longitude: getRegionGeo.lng,
+      latitudeDelta: 1.9022, // Масштаб по широте
+      longitudeDelta: 1.3421,
+    });
   };
 
-  const addressData = [
-    {
-      id: "1",
-      address: "бул-р Незалежності 31, оф 406, 401 ",
-      schedule: "Пн-Пт: 09:00-19:00; Сб: 10.00-16.00; Нд: вихідний ",
-      coordinate: { latitude: 50.5335773, longitude: 30.8236303 },
-    },
-    {
-      id: "2",
-      address: "бул-р Незалежності 31, оф 406, 401 ",
-      schedule: "Пн-Пт: 09:00-19:00; Сб: 10.00-16.00; Нд: вихідний ",
-      coordinate: { latitude: 50.5335773, longitude: 30.8236303 },
-    },
-    {
-      id: "3",
-      address: "бул-р Миру 31, оф 406, 401 ",
-      schedule: "Пн-Пт: 09:00-19:00; Сб: 10.00-16.00; Нд: вихідний ",
-      coordinate: { latitude: 50.5335773, longitude: 30.5236355 },
-    },
-  ];
+  const getAddress = async () => {
+    const response = await axios(`${SERVER_ADMIN}/api/storehouse`);
+
+    if (response.data.docs.length === 0) return;
+    const listStorehouse = response.data.docs;
+
+    const googleGeo = await Promise.all(
+      listStorehouse.map(async (item) => {
+        const responseGoogle = await axios(
+          `https://maps.googleapis.com/maps/api/geocode/json?address=${
+            item.city + "-" + item.address
+          }&key=${GOOGLE_KEY}`
+        );
+
+        const location = responseGoogle.data.results[0].geometry.location;
+
+        return {
+          id: item.id,
+          address: item.address,
+          schedule: item.schedule,
+          coordinate: { latitude: location.lat, longitude: location.lng },
+        };
+      })
+    );
+
+    setAddressData(googleGeo);
+  };
 
   const searchAddressFilter = useMemo(() => {
     if (searchInput === "") return [];
@@ -71,6 +101,14 @@ const OrderSelectAddress = () => {
     );
     navigation.navigate("order/select-payment");
   };
+
+  useEffect(() => {
+    if (isFocusedScreen) {
+      getRegion();
+
+      getAddress();
+    }
+  }, [isFocusedScreen]);
   return (
     <>
       <View>
@@ -100,44 +138,57 @@ const OrderSelectAddress = () => {
 
         {!focusSearch ? (
           <MapView
+            key={region.latitude}
             style={{ width: "100%", height: "100%" }}
             initialRegion={region}
           >
-            {addressData.map((item, index) => (
-              <Marker
-                key={index}
-                coordinate={item.coordinate}
-                onPress={() => goToPayment(item.address)}
-              />
-            ))}
+            {addressData.length === 0 ? (
+              <></>
+            ) : (
+              <>
+                {addressData.map((item, index) => (
+                  <Marker
+                    key={index}
+                    coordinate={item.coordinate}
+                    onPress={() => goToPayment(item.address)}
+                  />
+                ))}
+              </>
+            )}
           </MapView>
         ) : (
           <View style={styles.selectAdressWrapper}>
             <View style={styles.selectAdress}>
               {searchAddressFilter.length === 0 ? (
                 <>
-                  {addressData.map((item) => (
-                    <TouchableOpacity
-                      style={styles.selectAdressItem}
-                      key={item.id}
-                      onPress={() => goToPayment(item.address)}
-                    >
-                      <View style={styles.selectAdressItemIcon}>
-                        <SelectAddressIcon />
-                      </View>
-                      <View style={styles.selectAdressItemContent}>
-                        <Text style={styles.selectAdressItemContentText}>
-                          Склад:
-                        </Text>
-                        <Text style={styles.selectAdressItemContentAddress}>
-                          {item.address}
-                        </Text>
-                        <Text style={styles.selectAdressItemContentDay}>
-                          {item.schedule}
-                        </Text>
-                      </View>
-                    </TouchableOpacity>
-                  ))}
+                  {addressData.length === 0 ? (
+                    <></>
+                  ) : (
+                    <>
+                      {addressData.map((item) => (
+                        <TouchableOpacity
+                          style={styles.selectAdressItem}
+                          key={item.id}
+                          onPress={() => goToPayment(item.address)}
+                        >
+                          <View style={styles.selectAdressItemIcon}>
+                            <SelectAddressIcon />
+                          </View>
+                          <View style={styles.selectAdressItemContent}>
+                            <Text style={styles.selectAdressItemContentText}>
+                              Склад:
+                            </Text>
+                            <Text style={styles.selectAdressItemContentAddress}>
+                              {item.address}
+                            </Text>
+                            <Text style={styles.selectAdressItemContentDay}>
+                              {item.schedule}
+                            </Text>
+                          </View>
+                        </TouchableOpacity>
+                      ))}
+                    </>
+                  )}
                 </>
               ) : (
                 <>
