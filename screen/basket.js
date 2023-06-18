@@ -21,23 +21,24 @@ const Basket = ({ refresh = false }) => {
   const navigation = useNavigation();
   const isFocusedScreen = useIsFocused();
   const [basketData, setBasketData] = useState([]);
-  const [test, setTest] = useState("");
 
-  useEffect(() => {
+  const getBasket = () => {
     AsyncStorage.getItem("basket").then((value) => {
       if (!value) return;
       const result = JSON.parse(value);
       setBasketData(result);
     });
+  };
+
+  useEffect(() => {
+    if (refresh) {
+      getBasket();
+    }
   }, [refresh]);
 
   useEffect(() => {
     if (isFocusedScreen) {
-      AsyncStorage.getItem("basket").then((value) => {
-        if (!value) return;
-        const result = JSON.parse(value);
-        setBasketData(result);
-      });
+      getBasket();
     }
   }, [isFocusedScreen]);
 

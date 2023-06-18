@@ -36,10 +36,9 @@ import OrderSelectDate from "./screen/order/select-date";
 import OrderSelectFinally from "./screen/order/finally";
 import Buyout from "./screen/buyout";
 import BuyoutResult from "./screen/buyout-result";
-// import Test from "./screen/Test";
+
 import AcceptPhone from "./screen/accept-phone";
-import TabNavigator from "./screen/Test";
-import useSaveScreen from "./components/hook/useSaveScreen";
+import TabNavigation from "./screen/TabNavigation";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   setNavigationRef,
@@ -90,7 +89,7 @@ export default function App() {
             backgroundColor: "#ffffff",
           },
         }}
-        initialRouteName="home"
+        initialRouteName="front"
       >
         <Stack.Screen
           name="home"
@@ -102,24 +101,25 @@ export default function App() {
           }}
         />
 
-        {/* <Stack.Screen
-          name="test33"
-          component={Test33}
+        <Stack.Screen
+          name="front"
+          component={TabNavigation}
           options={{
             animationEnabled: true,
             headerShown: false,
             cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
           }}
-        /> */}
+        />
+
         {/* <Stack.Screen
-          name="test"
-          component={TabNavigator}
-          options={{
-            animationEnabled: true,
-            headerShown: false,
-            cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
-          }}
-        /> */}
+            name="test33"
+            component={Test33}
+            options={{
+              animationEnabled: true,
+              headerShown: false,
+              cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+            }}
+          /> */}
         <Stack.Screen
           name="catalog-item"
           component={CatalogItem}

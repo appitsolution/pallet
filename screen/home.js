@@ -81,9 +81,9 @@ const slideData = [
   },
 ];
 
-const Home = () => {
+const Home = ({ refresh = false }) => {
   const [testTab, setTestTab] = useState(true);
-  const [refresh, setRefresh] = useState(false);
+  const [refreshLoader, setRefreshLoader] = useState(false);
   const [bonusScore, setBonusScore] = useState("");
   const isFocusedScreen = useIsFocused();
 
@@ -187,6 +187,24 @@ const Home = () => {
   };
 
   useEffect(() => {
+    if (refresh) {
+      getBasket();
+      requestCatalog();
+      requestSortButtons();
+      getBonus();
+    }
+  }, [refresh]);
+
+  const refreshRequest = async () => {
+    setRefreshLoader(true);
+    await requestCatalog();
+    await requestSortButtons();
+    await getBasket();
+    await getBonus();
+    setRefreshLoader(false);
+  };
+
+  useEffect(() => {
     useSaveScreen(router.getState().routes[0].name);
 
     if (isFocusedScreen) {
@@ -229,15 +247,6 @@ const Home = () => {
     setSortInput(value);
   };
 
-  const refreshRequest = async () => {
-    setRefresh(true);
-    await requestCatalog();
-    await requestSortButtons();
-    await getBasket();
-    await getBonus();
-    setRefresh(false);
-  };
-
   return (
     <>
       <View style={styles.home}>
@@ -246,7 +255,7 @@ const Home = () => {
           showsVerticalScrollIndicator={false}
           refreshControl={
             <RefreshControl
-              refreshing={refresh}
+              refreshing={refreshLoader}
               colors={["#ff0000"]}
               onRefresh={refreshRequest}
               tintColor={"white"}

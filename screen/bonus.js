@@ -84,6 +84,13 @@ const Bonus = ({ refresh = false }) => {
   };
 
   useEffect(() => {
+    if (refresh) {
+      requestBonus();
+      getBasket();
+    }
+  }, [refresh]);
+
+  useEffect(() => {
     if (isFocusedScreen) {
       requestBonus();
       getBasket();

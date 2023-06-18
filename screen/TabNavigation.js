@@ -1,13 +1,12 @@
 import Swiper from "react-native-swiper";
+import { useState, useEffect } from "react";
 import Home from "./home";
 import Bonus from "./bonus";
 import Basket from "./basket";
 import Profile from "./profile";
-import { useState } from "react";
 import Navigation from "../components/Navigation";
-import { useEffect } from "react";
 
-const Test = () => {
+const TabNavigation = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const currentNavigationName = () => {
@@ -23,17 +22,16 @@ const Test = () => {
         loop={false}
         onIndexChanged={(index) => {
           setCurrentIndex(index);
-          console.log(index);
         }}
       >
-        <Home />
+        <Home refresh={currentIndex === 0 ? true : false} />
         <Bonus refresh={currentIndex === 1 ? true : false} />
         <Basket refresh={currentIndex === 2 ? true : false} />
         <Profile />
       </Swiper>
-      <Navigation active={currentNavigationName()} />
+      {/* <Navigation active={currentNavigationName()} /> */}
     </>
   );
 };
 
-export default Test;
+export default TabNavigation;
