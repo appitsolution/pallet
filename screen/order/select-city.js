@@ -13,18 +13,14 @@ import BackCatalog from "../../assets/Icons/BackCatalog";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import LocationIcon from "../../assets/Icons/LocationIcon";
 import { useEffect, useState } from "react";
-import CloseBasket from "../../assets/Icons/CloseBasket";
 import { SERVER_ADMIN } from "@env";
+import axios from "axios";
 
 const OrderSelectCity = () => {
   const isFocusedAccept = useIsFocused();
   const navigation = useNavigation();
 
   const [selectCityData, setSelectCityData] = useState([
-    {
-      title: "Київ",
-      active: true,
-    },
     {
       title: "Львів",
       active: false,
@@ -50,15 +46,17 @@ const OrderSelectCity = () => {
 
   const getOrderData = async () => {
     const getOrder = await AsyncStorage.getItem("orderData");
-    const newSelectCity = selectCityData.map((item) => {
-      if (item.title === JSON.parse(getOrder).city) {
+    const request = await axios(`${SERVER_ADMIN}/api/storehouse`);
+
+    const newSelectCity = request.data.docs.map((item) => {
+      if (item.city === JSON.parse(getOrder).city) {
         return {
-          title: item.title,
+          title: item.city,
           active: true,
         };
       } else {
         return {
-          title: item.title,
+          title: item.city,
           active: false,
         };
       }

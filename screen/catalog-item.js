@@ -30,7 +30,7 @@ const CatalogItem = () => {
   const [isBasket, setIsBasket] = useState(false);
   const [catalogData, setCatalogData] = useState({});
 
-  console.log(router.params);
+  // console.log(router.params);
 
   const addHistory = async (data) => {
     const getHistory = await AsyncStorage.getItem("catalogHistory");
@@ -140,7 +140,6 @@ const CatalogItem = () => {
                   paginationStyle={styles.sliderPagination}
                 >
                   {catalogData.images.map((item, index) => {
-                    console.log(item.catalog.filename);
                     return (
                       <Image
                         key={index}

@@ -17,6 +17,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SERVER } from "@env";
 import BackCatalog from "../assets/Icons/BackCatalog";
 
+import Toast, { ErrorToast } from "react-native-toast-message";
+
 const AcceptPhone = () => {
   const navigation = useNavigation();
   const route = useRoute();
@@ -124,6 +126,14 @@ const AcceptPhone = () => {
 
     await axios.post(`${SERVER}/auth/send-code`, {
       phone: acceptPhoneDataJSON.phone,
+    });
+
+    Toast.show({
+      type: "info",
+      text1: "Успіх",
+      text2: "На ваш номер було надіслано код",
+      autoHide: false,
+      onPress: () => Toast.hide(),
     });
   };
 
@@ -257,6 +267,7 @@ const AcceptPhone = () => {
       </Animated.View>
 
       <StatusBar barStyle="dark-content" />
+      <Toast />
     </>
   );
 };

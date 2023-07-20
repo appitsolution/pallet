@@ -2,93 +2,93 @@ import {
   View,
   Text,
   TouchableOpacity,
-  ScrollView,
-  Image,
   TextInput,
   StatusBar,
 } from "react-native";
 import styles from "../../style/order";
-import { useIsFocused, useNavigation } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import BackCatalog from "../../assets/Icons/BackCatalog";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import MapView, { Marker } from "react-native-maps";
 import SearchIcon from "../../assets/Icons/SearchIcon";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import SelectAddressIcon from "../../assets/Icons/SelectAddressIcon";
 import axios from "axios";
-import { SERVER_ADMIN, GOOGLE_KEY } from "@env";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { GOOGLE_KEY } from "@env";
 
 const OrderSelectAddress = () => {
-  const isFocusedScreen = useIsFocused();
   const navigation = useNavigation();
-  const [searchInput, setSearchInput] = useState("");
-  const [focusSearch, setFocusSearch] = useState(false);
-
-  const [region, setRegion] = useState({
-    latitude: 50.2335773,
-    longitude: 30.6236303,
-    latitudeDelta: 1.9022, // Масштаб по широте
-    longitudeDelta: 1.3421, // Масштаб по долготе
-  });
-
   const [addressData, setAddressData] = useState([]);
+  const [searchInput, setSearchInput] = useState("");
 
-  const getRegion = async () => {
-    const currentCity = await AsyncStorage.getItem("orderData");
+  const [timeoutToClear, setTimeoutToClear] = useState();
 
-    const getRegion = await axios(
-      `https://maps.googleapis.com/maps/api/geocode/json?address=${
-        JSON.parse(currentCity).city
-      }&key=${GOOGLE_KEY}`
-    );
+  const fakeDelay = (ms) => new Promise((res) => setTimeout(res, ms));
 
-    const getRegionGeo = getRegion.data.results[0].geometry.location;
+  useEffect(() => {
+    return () => {
+      clearTimeout(timeoutToClear);
+    };
+  }, []);
 
-    setRegion({
-      latitude: getRegionGeo.lat,
-      longitude: getRegionGeo.lng,
-      latitudeDelta: 1.9022, // Масштаб по широте
-      longitudeDelta: 1.3421,
-    });
+  const debounce = (callback, alwaysCall, ms) => {
+    return (...args) => {
+      alwaysCall(...args);
+      clearTimeout(timeoutToClear);
+      setTimeoutToClear(
+        setTimeout(() => {
+          callback(...args);
+        }, ms)
+      );
+    };
   };
 
-  const getAddress = async () => {
-    const response = await axios(`${SERVER_ADMIN}/api/storehouse`);
-
-    if (response.data.docs.length === 0) return;
-    const listStorehouse = response.data.docs;
-
-    const googleGeo = await Promise.all(
-      listStorehouse.map(async (item) => {
-        const responseGoogle = await axios(
-          `https://maps.googleapis.com/maps/api/geocode/json?address=${
-            item.city + "-" + item.address
-          }&key=${GOOGLE_KEY}`
-        );
-
-        const location = responseGoogle.data.results[0].geometry.location;
-
-        return {
-          id: item.id,
-          address: item.address,
-          schedule: item.schedule,
-          coordinate: { latitude: location.lat, longitude: location.lng },
-        };
-      })
-    );
-
-    setAddressData(googleGeo);
+  const setSearchTextAlways = (text) => {
+    setSearchInput(text);
   };
 
-  const searchAddressFilter = useMemo(() => {
-    if (searchInput === "") return [];
-    const filter = addressData.filter((item) => {
-      if (item.address.includes(searchInput)) {
-        return item;
-      }
-    });
-    return filter;
-  }, [searchInput]);
+  const searchAddress = async (text) => {
+    setSearchInput(text);
+    await fakeDelay(1000);
+
+    if (text === "") return;
+    const codeAddress = encodeURIComponent(text);
+    console.log(text);
+
+    try {
+      const searchAddressRequest = await axios(
+        `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${codeAddress}&key=${GOOGLE_KEY}&radius=500&components=country:ua`
+      );
+
+      // console.log(testResult.data.predictions);
+      // testResult.data.predictions.forEach((item) => {
+      //   console.log(item.structured_formatting.main_text);
+      // });
+
+      if (searchAddressRequest.data.predictions.length === 0) return;
+      const regex = /\b\d{5}\b|\b\w{1,4}\b(?!\w)/g;
+
+      const newDataAddress = searchAddressRequest.data.predictions.map(
+        (item, index) => {
+          if (item.structured_formatting.main_text === "") return;
+          return {
+            id: index,
+            address: item.structured_formatting.main_text,
+          };
+        }
+      );
+      setAddressData(newDataAddress);
+      console.log(newDataAddress);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const debouncedSearchFruits = debounce(
+    searchAddress,
+    setSearchTextAlways,
+    500
+  );
 
   const goToPayment = async (address) => {
     const getOrder = await AsyncStorage.getItem("orderData");
@@ -96,19 +96,13 @@ const OrderSelectAddress = () => {
       "orderData",
       JSON.stringify({
         ...JSON.parse(getOrder),
-        address: address, // Адресс склада
+        address: address, // Адрес
+        storehouse: "-",
       })
     );
     navigation.navigate("order/select-payment");
   };
 
-  useEffect(() => {
-    if (isFocusedScreen) {
-      getRegion();
-
-      getAddress();
-    }
-  }, [isFocusedScreen]);
   return (
     <>
       <View>
@@ -119,7 +113,7 @@ const OrderSelectAddress = () => {
           <View style={{ flexDirection: "row" }}>
             <BackCatalog />
 
-            <Text style={styles.backText}>Адреса та час роботи</Text>
+            <Text style={styles.backText}>Ваша Адреса</Text>
           </View>
         </TouchableOpacity>
 
@@ -130,69 +124,21 @@ const OrderSelectAddress = () => {
           <TextInput
             placeholder="Введіть адресу"
             value={searchInput}
-            onChangeText={(value) => setSearchInput(value)}
-            onFocus={() => setFocusSearch(true)}
-            onBlur={() => setFocusSearch(false)}
+            onChangeText={(value) => {
+              debouncedSearchFruits(value);
+            }}
+            style={{ width: "100%" }}
           />
         </View>
 
-        {!focusSearch ? (
-          <MapView
-            key={region.latitude}
-            style={{ width: "100%", height: "100%" }}
-            initialRegion={region}
-          >
-            {addressData.length === 0 ? (
-              <></>
-            ) : (
-              <>
-                {addressData.map((item, index) => (
-                  <Marker
-                    key={index}
-                    coordinate={item.coordinate}
-                    onPress={() => goToPayment(item.address)}
-                  />
-                ))}
-              </>
-            )}
-          </MapView>
-        ) : (
-          <View style={styles.selectAdressWrapper}>
+        <View style={styles.selectAdressWrapper}>
+          <KeyboardAwareScrollView>
             <View style={styles.selectAdress}>
-              {searchAddressFilter.length === 0 ? (
-                <>
-                  {addressData.length === 0 ? (
-                    <></>
-                  ) : (
-                    <>
-                      {addressData.map((item) => (
-                        <TouchableOpacity
-                          style={styles.selectAdressItem}
-                          key={item.id}
-                          onPress={() => goToPayment(item.address)}
-                        >
-                          <View style={styles.selectAdressItemIcon}>
-                            <SelectAddressIcon />
-                          </View>
-                          <View style={styles.selectAdressItemContent}>
-                            <Text style={styles.selectAdressItemContentText}>
-                              Склад:
-                            </Text>
-                            <Text style={styles.selectAdressItemContentAddress}>
-                              {item.address}
-                            </Text>
-                            <Text style={styles.selectAdressItemContentDay}>
-                              {item.schedule}
-                            </Text>
-                          </View>
-                        </TouchableOpacity>
-                      ))}
-                    </>
-                  )}
-                </>
+              {addressData.length === 0 ? (
+                <></>
               ) : (
                 <>
-                  {searchAddressFilter.map((item) => (
+                  {addressData.map((item) => (
                     <TouchableOpacity
                       style={styles.selectAdressItem}
                       key={item.id}
@@ -203,22 +149,22 @@ const OrderSelectAddress = () => {
                       </View>
                       <View style={styles.selectAdressItemContent}>
                         <Text style={styles.selectAdressItemContentText}>
-                          Склад:
+                          Адреса
                         </Text>
                         <Text style={styles.selectAdressItemContentAddress}>
                           {item.address}
                         </Text>
-                        <Text style={styles.selectAdressItemContentDay}>
-                          {item.schedule}
-                        </Text>
+                        {/* <Text style={styles.selectAdressItemContentDay}>
+                        {item.schedule}
+                      </Text> */}
                       </View>
                     </TouchableOpacity>
                   ))}
                 </>
               )}
             </View>
-          </View>
-        )}
+          </KeyboardAwareScrollView>
+        </View>
       </View>
 
       <StatusBar barStyle="dark-content" />

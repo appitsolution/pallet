@@ -12,6 +12,8 @@ import useVerify from "../../components/hook/useVerify";
 import { SERVER } from "@env";
 import ChangeProfileDataComponent from "../../components/profile/ChangeProfileData";
 
+import Toast, { ErrorToast } from "react-native-toast-message";
+
 const ProfileData = () => {
   const [isShowPassModal, setIsShowPassModal] = useState(false);
   const [showChangeData, setShowChangeData] = useState(false);
@@ -86,6 +88,14 @@ const ProfileData = () => {
       if (result.data.code === 401) {
         return result.data;
       }
+
+      Toast.show({
+        type: "info",
+        text1: "Успіх",
+        text2: "Ваш пароль було змінено",
+        autoHide: false,
+        onPress: () => Toast.hide(),
+      });
       setIsShowPassModal(false);
       verifyFun();
       return result.data;
@@ -167,6 +177,7 @@ const ProfileData = () => {
 
       <Navigation active="profile" />
       <StatusBar barStyle="dark-content" />
+      <Toast />
     </>
   );
 };

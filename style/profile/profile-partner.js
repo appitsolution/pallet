@@ -14,6 +14,7 @@ const profilePartnerStyle = StyleSheet.create({
   },
   content: {
     marginTop: 20,
+    paddingBottom: 150,
   },
   wrapper: {
     paddingHorizontal: 16,

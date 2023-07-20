@@ -69,7 +69,7 @@ const BuyoutResult = () => {
         </View>
       </View>
 
-      <View style={styles.orderButtonsWrapper}>
+      {/* <View style={styles.orderButtonsWrapper}>
         <TouchableOpacity
           style={styles.orderButtonGoOrders}
           onPress={() => {
@@ -86,7 +86,7 @@ const BuyoutResult = () => {
         >
           <Text style={styles.orderButtonText}>нова пропозиція</Text>
         </TouchableOpacity>
-      </View>
+      </View> */}
 
       <StatusBar barStyle="dark-content" />
       <Navigation />

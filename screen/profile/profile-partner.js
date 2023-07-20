@@ -4,6 +4,13 @@ import styles from "../../style/profile/profile-partner";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import BackCatalog from "../../assets/Icons/BackCatalog";
 import { StatusBar } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import stylesBuyout from "../../style/buyout";
+import CloseBasket from "../../assets/Icons/CloseBasket";
+import { useState } from "react";
+import axios from "axios";
+import { SERVER_ADMIN } from "@env";
+import useVerify from "../../components/hook/useVerify";
 
 const partnerData = [
   {
@@ -27,6 +34,8 @@ const partnerData = [
 const ProfilePartner = () => {
   const navigation = useNavigation();
   const route = useRoute();
+  const [isOpenModal, setIsOpenModal] = useState(false);
+
   const prevScreenReturn = () => {
     let prevScreenPath = "";
     if (route.params !== undefined) {
@@ -39,6 +48,59 @@ const ProfilePartner = () => {
       }
     }
     return false;
+  };
+
+  const createRequestPartner = async () => {
+    const { dataFetch } = await useVerify();
+    console.log("test:", SERVER_ADMIN);
+    await axios.post(`${SERVER_ADMIN}/api/request-partner`, {
+      firstName: dataFetch.firstName,
+      phone: dataFetch.phone,
+      message: "Партнерська програма",
+    });
+
+    setIsOpenModal(true);
+  };
+
+  const NotificationCall = () => {
+    return (
+      <>
+        <View
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0,0,0,0.5)",
+            zIndex: 4,
+            justifyContent: "center",
+            alignItems: "center",
+            paddingHorizontal: 10,
+          }}
+        >
+          <TouchableOpacity
+            onPress={() => setIsOpenModal(false)}
+            style={{ position: "absolute", top: 45, right: 15 }}
+          >
+            <CloseBasket color="white" width={40} height={40} />
+          </TouchableOpacity>
+          <View
+            style={{
+              width: "100%",
+              height: 150,
+              backgroundColor: "white",
+              borderRadius: 5,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Text style={styles.title}>Запит прийнятий.</Text>
+            <Text style={styles.title}>З вами зв'яжуться.</Text>
+          </View>
+        </View>
+      </>
+    );
   };
 
   return (
@@ -56,7 +118,7 @@ const ProfilePartner = () => {
           <Text style={styles.backText}>Партнерська програма</Text>
         </TouchableOpacity>
       </View>
-      <ScrollView>
+      <KeyboardAwareScrollView>
         <View style={styles.content}>
           {partnerData.map((item, index) => (
             <View style={styles.wrapper} key={index}>
@@ -64,8 +126,17 @@ const ProfilePartner = () => {
               <Text style={styles.desc}>{item.desc}</Text>
             </View>
           ))}
+          <View style={{ paddingHorizontal: 8 }}>
+            <TouchableOpacity
+              style={stylesBuyout.acceptButton}
+              onPress={() => createRequestPartner()}
+            >
+              <Text style={stylesBuyout.acceptButtonText}>Хочу долучитись</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </ScrollView>
+      </KeyboardAwareScrollView>
+      {isOpenModal ? <NotificationCall /> : <></>}
       <Navigation active="profile" />
       <StatusBar barStyle="dark-content" />
     </>

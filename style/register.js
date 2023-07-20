@@ -5,6 +5,15 @@ const registerStyle = StyleSheet.create({
     paddingTop: 50,
     width: "100%",
   },
+  back: {
+    paddingTop: 50,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  backText: {
+    fontSize: 22,
+    fontWeight: "600",
+  },
   title: {
     paddingHorizontal: 8,
     paddingBottom: 10,
@@ -263,6 +272,13 @@ const registerStyle = StyleSheet.create({
   acceptAgainCodeButtonText: {
     color: "#363636",
     fontWeight: "700",
+  },
+  changePasswordText: {
+    fontSize: 13,
+    fontWeight: "500",
+    color: "#363636",
+    marginTop: 15,
+    textAlign: "center",
   },
 });
 

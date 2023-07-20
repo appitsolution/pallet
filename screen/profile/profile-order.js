@@ -18,6 +18,9 @@ const ProfileOrder = () => {
   const getOrders = async () => {
     const getUser = await useVerify();
 
+    if (getUser.dataFetch.orderHistory.length === 0) {
+      return;
+    }
     await Promise.all(
       getUser.dataFetch.orderHistory.map(async (item) => {
         const responseOrder = await axios.get(
@@ -26,7 +29,7 @@ const ProfileOrder = () => {
         return responseOrder.data;
       })
     ).then((data) => {
-      console.log(data);
+      console.log(data[data.length - 1].statusPayment);
       setOrdersData(data.reverse());
     });
   };
@@ -118,14 +121,40 @@ const ProfileOrder = () => {
                           </Text>
                         </View>
                         <View style={styles.orderWrapperItemInfoBlock}>
-                          <Text style={styles.orderWrapperItemInfoBlockText}>
-                            Статус оплати:
-                          </Text>
-                          <Text
-                            style={styles.orderWrapperItemInfoBlockScore(true)}
-                          >
-                            Оплачене
-                          </Text>
+                          {product.statusPayment === "accept" ? (
+                            <>
+                              <Text
+                                style={styles.orderWrapperItemInfoBlockText}
+                              >
+                                Статус оплати:
+                              </Text>
+                              <Text
+                                style={styles.orderWrapperItemInfoBlockScore(
+                                  true
+                                )}
+                              >
+                                Оплачене
+                              </Text>
+                            </>
+                          ) : (
+                            <>
+                              <Text
+                                style={styles.orderWrapperItemInfoBlockText}
+                              >
+                                Статус оплати:
+                              </Text>
+                              <Text
+                                style={{
+                                  ...styles.orderWrapperItemInfoBlockScore(
+                                    true
+                                  ),
+                                  color: "#FFB21D",
+                                }}
+                              >
+                                Не оплачене
+                              </Text>
+                            </>
+                          )}
                         </View>
                       </View>
                     </View>

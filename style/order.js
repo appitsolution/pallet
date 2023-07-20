@@ -266,7 +266,9 @@ const orderStyle = StyleSheet.create({
     borderTopColor: "#E1E1E1",
     borderTopWidth: 1,
   },
-  selectAdress: {},
+  selectAdress: {
+    paddingBottom: 300,
+  },
   selectAdressItem: {
     width: "100%",
     height: 86,
@@ -286,7 +288,7 @@ const orderStyle = StyleSheet.create({
     fontWeight: "400",
     marginBottom: 2,
     color: "rgba(0, 0, 0, 0.6)",
-    maxWidth: "90%",
+    maxWidth: "95%",
   },
   selectAdressItemContentAddress: {
     fontSize: 14,
@@ -294,7 +296,7 @@ const orderStyle = StyleSheet.create({
     fontWeight: "400",
     marginBottom: 2,
     color: "#272727",
-    maxWidth: "90%",
+    // maxWidth: "95%",
   },
   selectAdressItemContentDay: {
     fontSize: 12,
@@ -344,6 +346,13 @@ const orderStyle = StyleSheet.create({
     paddingHorizontal: 22,
     marginTop: 20,
   },
+  messageFinallyTitle: {
+    fontSize: 22,
+    fontWeight: "700",
+    color: "#272727",
+    textAlign: "center",
+    marginBottom: 10,
+  },
   messageFinallyText: {
     fontSize: 13,
     lineHeight: 17,
@@ -366,7 +375,7 @@ const orderStyle = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 3,
     borderRadius: 4,
-    backgroundColor: "#ffffff",
+    backgroundColor: "#FFF6E5",
     paddingHorizontal: 12,
     paddingVertical: 14,
   },

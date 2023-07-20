@@ -21,6 +21,7 @@ import { useCallback, useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import useVerify from "../components/hook/useVerify";
 import { ScrollView } from "react-native";
+import ProfileImage from "../assets/Icons/ProfileImage";
 
 const menuData = [
   {
@@ -145,7 +146,10 @@ const Profile = () => {
             navigation.navigate("profile/data");
           }}
         >
-          <Image style={styles.infoImg} source={profileIcon} />
+          <View style={styles.infoImg}>
+            <ProfileImage />
+          </View>
+          {/* <Image style={styles.infoImg} source={profileIcon} /> */}
           <Text style={styles.infoTitle}>
             {data.lastName !== "" ? data.lastName : ""}{" "}
             {data.firstName !== "" ? data.firstName : ""}

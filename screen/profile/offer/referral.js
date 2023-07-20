@@ -97,7 +97,7 @@ const ProfileOfferReferral = () => {
             <TouchableOpacity
               style={styles.button}
               onPress={() => {
-                Linking.openURL("https://google.com");
+                Linking.openURL("https://t.me/PalletDvir_bot");
               }}
             >
               <Text style={styles.buttonText}>

@@ -142,13 +142,17 @@ const Buyout = () => {
 
   const [selectCurrentImage, setSelectCurrentImage] = useState([]);
   const [dataImage, setDataImage] = useState(null);
+  const [errorImage, setErrorImage] = useState(false);
 
   const selectFile = async () => {
+    setErrorImage(false);
     let result = await ImagePicker.launchImageLibraryAsync({
       allowsEditing: false,
       quality: 1,
       allowsMultipleSelection: true,
     });
+
+    console.log(result);
 
     if (!result.cancelled) {
       if (result?.selected === undefined) {
@@ -177,6 +181,8 @@ const Buyout = () => {
       setDataImage(selectedFormData);
       setSelectCurrentImage(selectedUri);
     } else {
+      setDataImage(null);
+      setSelectCurrentImage([]);
       Alert.alert("error", "You did not select any image.");
     }
   };
@@ -209,31 +215,41 @@ const Buyout = () => {
       if (dataImage === null) return;
       setLoading(true);
 
-      const createImageRequest = await Promise.all(
-        dataImage.map((item) => {
-          const config = {
-            method: "post",
-            url: "https://admin.palletdvor.com.ua/api/media",
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-            data: item,
-          };
+      const createImageRequest = [];
+      const delay = 500;
 
-          return axios(config).then((response) => {
-            console.log(response.data);
-            return response.data;
-          });
-        })
-      );
+      for (const item of dataImage) {
+        const config = {
+          method: "post",
+          url: "https://admin.palletdvor.com.ua/api/media",
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          data: item,
+        };
 
-      console.log(createImageRequest);
-      const imagesId = createImageRequest.map((item) => {
+        const response = await sendRequestWithDelay(config, delay);
+        createImageRequest.push(response.data);
+      }
+
+      async function sendRequestWithDelay(config, delay) {
+        return new Promise((resolve) => {
+          setTimeout(async () => {
+            const response = await axios(config);
+            resolve(response);
+          }, delay);
+        });
+      }
+
+      const allResponses = await Promise.all(createImageRequest);
+
+      const imagesId = allResponses.map((item) => {
         return {
           id: item.doc.id,
           image: item.doc.id,
         };
       });
+      console.log(imagesId);
 
       try {
         const result = await axios.post(`${SERVER_ADMIN}/api/buyout`, {
@@ -246,6 +262,7 @@ const Buyout = () => {
           address: inputAddress,
           images: imagesId,
         });
+        console.log(result.data.doc);
 
         await AsyncStorage.setItem("buyout", JSON.stringify(result.data.doc));
 
@@ -255,21 +272,7 @@ const Buyout = () => {
         console.log(err);
       }
     } else {
-      setLoading(true);
-      axios
-        .post(`${SERVER_ADMIN}/api/buyout`, {
-          firstName: firstName,
-          lastName: lastName,
-          phone: phone,
-          size: size,
-          state: state,
-          score: inputScore,
-        })
-        .then((res) => {
-          AsyncStorage.setItem("buyout", JSON.stringify(res.data.doc));
-          setLoading(false);
-          navigation.navigate("buyout-result");
-        });
+      setErrorImage(true);
     }
   };
 
@@ -350,6 +353,32 @@ const Buyout = () => {
             />
           </View>
 
+          <View style={{ marginTop: 20 }}>
+            <Text
+              style={{
+                fontSize: 16,
+                fontWeight: "500",
+                color: "#49454F",
+                textAlign: "center",
+                marginBottom: 5,
+                textTransform: "uppercase",
+              }}
+            >
+              Орієнтована вартість
+            </Text>
+            <Text
+              style={{
+                fontSize: 15,
+                fontWeight: "500",
+                color: "#F40000",
+                textAlign: "center",
+                marginBottom: 5,
+              }}
+            >
+              {searchPrice()}
+            </Text>
+          </View>
+
           {inputScore === "" ? (
             <></>
           ) : (
@@ -381,6 +410,16 @@ const Buyout = () => {
                 <FileIcon />
                 <Text style={styles.fileInputButtonText}>Прикріпити файл</Text>
               </TouchableOpacity>
+              <Text
+                style={{
+                  ...styles.showFileDesc,
+                  color: "#F40000",
+                  fontWeight: "400",
+                  opacity: errorImage ? 1 : 0,
+                }}
+              >
+                Завантажте фото
+              </Text>
 
               {selectCurrentImage.length === 0 ? (
                 <></>
@@ -396,55 +435,35 @@ const Buyout = () => {
                   ))}
                 </>
               )}
-              <TextInput
-                placeholder="Вказати адресу"
-                style={styles.fileInputAddress}
-                value={inputAddress}
-                onChangeText={(value) => setInputAddress(value)}
-                ref={inputAddressRef}
-                onFocus={() => {
-                  if (inputAddressRef.current) {
-                    inputAddressRef.current.measureLayout(
-                      scrollViewRef.current,
-                      (x, y) => {
-                        scrollViewRef.current.scrollTo({
-                          y: y,
-                          animated: true,
-                        });
-                      }
-                    );
-                  }
-                }}
-              />
             </View>
+          </View>
+          <View style={{ ...styles.titleSecondWrapper, marginTop: 20 }}>
+            <Text style={styles.titleSecond}>Вказати адресу</Text>
+          </View>
+
+          <View style={styles.inputScoreWrapper}>
+            <TextInput
+              style={styles.inputScore(errorScore)}
+              value={inputAddress}
+              onChangeText={(value) => setInputAddress(value)}
+              ref={inputAddressRef}
+              onFocus={() => {
+                if (inputAddressRef.current) {
+                  inputAddressRef.current.measureLayout(
+                    scrollViewRef.current,
+                    (x, y) => {
+                      scrollViewRef.current.scrollTo({
+                        y: y,
+                        animated: true,
+                      });
+                    }
+                  );
+                }
+              }}
+            />
           </View>
 
           <View style={styles.acceptButtonWrapper}>
-            <View style={{ marginBottom: 20 }}>
-              <Text
-                style={{
-                  fontSize: 16,
-                  fontWeight: "500",
-                  color: "#49454F",
-                  textAlign: "center",
-                  marginBottom: 5,
-                  textTransform: "uppercase",
-                }}
-              >
-                Орієнтована вартість
-              </Text>
-              <Text
-                style={{
-                  fontSize: 15,
-                  fontWeight: "500",
-                  color: "#F40000",
-                  textAlign: "center",
-                  marginBottom: 5,
-                }}
-              >
-                {searchPrice()}
-              </Text>
-            </View>
             <TouchableOpacity style={styles.acceptButton} onPress={submitFetch}>
               <Text style={styles.acceptButtonText}>Отримати точну ціну</Text>
             </TouchableOpacity>
@@ -457,7 +476,7 @@ const Buyout = () => {
         textContent={"Loading..."}
         textStyle={{ color: "white" }}
       />
-      <Navigation active="shop" />
+      <Navigation />
       <StatusBar barStyle="dark-content" />
     </>
   );

@@ -50,6 +50,8 @@ import ProfileInfoSupply from "./screen/profile/info/supply";
 import ProfileInfoDelivery from "./screen/profile/info/delivery";
 import ProfileInfoBuyout from "./screen/profile/info/buyout";
 import ProfileInfoTrend from "./screen/profile/info/trend";
+import OrderSelectStorehouse from "./screen/order/select-storehouse";
+import ResetPassword from "./screen/reset-password";
 
 const Stack = createStackNavigator();
 
@@ -142,6 +144,14 @@ export default function App() {
         <Stack.Screen
           name="login"
           component={Login}
+          options={{
+            animationEnabled: false,
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="reset-password"
+          component={ResetPassword}
           options={{
             animationEnabled: false,
             headerShown: false,
@@ -367,6 +377,15 @@ export default function App() {
         <Stack.Screen
           name="order/select-address"
           component={OrderSelectAddress}
+          options={{
+            animationEnabled: true,
+            headerShown: false,
+            cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+          }}
+        />
+        <Stack.Screen
+          name="order/select-storehouse"
+          component={OrderSelectStorehouse}
           options={{
             animationEnabled: true,
             headerShown: false,

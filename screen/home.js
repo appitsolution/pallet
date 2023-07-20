@@ -153,9 +153,28 @@ const Home = () => {
 
   const requestCatalog = async () => {
     try {
+      const requestCategories = await axios(
+        `${SERVER_ADMIN}/api/categories-products`
+      );
       console.log(SERVER_ADMIN);
-      const getCatalog = await axios.get(`${SERVER_ADMIN}/api/products`);
-      setCatalogData(getCatalog.data.docs);
+      const getCatalog = await axios.get(
+        `${SERVER_ADMIN}/api/products?limit=0`
+      );
+      const responseCatalog = [];
+
+      requestCategories.data.docs.forEach((item) => {
+        getCatalog.data.docs.forEach((product) => {
+          if (product.categories.name === item.name) {
+            responseCatalog.push(product);
+          }
+        });
+      });
+
+      responseCatalog.sort((a, b) => {
+        return Number(a.customId) - Number(b.customId);
+      });
+
+      setCatalogData(responseCatalog);
     } catch (err) {
       console.log(err);
     }
@@ -203,6 +222,10 @@ const Home = () => {
     const result = catalogData.filter(
       (item) => item.categories.name === sortInput
     );
+
+    result.sort((a, b) => {
+      return Number(a.customId) - Number(b.customId);
+    });
 
     return result;
   }, [sortInput]);
@@ -312,7 +335,11 @@ const Home = () => {
                       <View style={styles.bannerFirst}>
                         <ImageBackground
                           source={item.image}
-                          style={{ width: "100%", height: "100%" }}
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                          }}
+                          resizeMode="stretch"
                         ></ImageBackground>
                       </View>
                     </TouchableOpacity>

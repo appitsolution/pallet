@@ -29,6 +29,7 @@ const Register = () => {
   const [errorFirstName, setErrorFirstName] = useState(false);
   const [errorLastName, setErrorLastName] = useState(false);
   const [errorPhone, setErrorPhone] = useState(false);
+  const [errorPhoneSuch, setErrorPhoneSuch] = useState(false);
   const [errorEmail, setErrorEmail] = useState(false);
   const [errorEmailSuch, setErrorEmailSuch] = useState(false);
   const [errorPassord, setErrorPassword] = useState(false);
@@ -101,9 +102,16 @@ const Register = () => {
     });
 
     if (result.data.code === 409) {
-      setErrorEmail(true);
-      setErrorEmailSuch(true);
-      return;
+      if (result.data.error === "email") {
+        setErrorEmail(true);
+        setErrorEmailSuch(true);
+        return;
+      }
+      if (result.data.error === "phone") {
+        setErrorPhone(true);
+        setErrorPhoneSuch(true);
+        return;
+      }
     }
     if (result.data.status !== "ok") {
       console.log(result.data);
@@ -219,9 +227,17 @@ const Register = () => {
                   value={phone}
                   keyboardType="number-pad"
                   onChangeText={(value) => setPhone(value)}
-                  onFocus={() => setErrorPhone(false)}
+                  onFocus={() => {
+                    setErrorPhone(false);
+                    setErrorPhoneSuch(false);
+                  }}
                   placeholder="380931234455"
                 />
+                {errorPhoneSuch ? (
+                  <Text style={styles.textError}>Цей номер зареєстровано</Text>
+                ) : (
+                  <></>
+                )}
               </View>
               <View style={styles.formWrapper}>
                 <Text style={styles.placeholder}>Ел. почта</Text>

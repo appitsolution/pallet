@@ -77,7 +77,7 @@ const buyoutStyle = StyleSheet.create({
       return {
         paddingVertical: 20,
         paddingHorizontal: 50,
-        borderColor: "#F1F1F1",
+        borderColor: "rgba(136,133,133,0.4)",
         borderWidth: 1,
         borderRadius: 100,
         fontSize: 14,
@@ -162,10 +162,11 @@ const buyoutStyle = StyleSheet.create({
     marginTop: 20,
     fontSize: 14,
     lineHeight: 22,
-    fontWeight: "400",
+    fontWeight: "500",
     color: "#49454F",
     letterSpacing: 0.25,
-    maxWidth: 280,
+    // maxWidth: 280,
+    textAlign: "center",
   },
   fileInput: {
     alignItems: "center",

@@ -61,7 +61,7 @@ const Bonus = ({ refresh = false }) => {
       setBonusScore(result.dataFetch.bonus.bonusScore);
       if (result.dataFetch.bonus.startBonusDate !== "") {
         const dateString = result.dataFetch.bonus.startBonusDate;
-        console.log(dateString);
+
         if (dateString === undefined) {
           return setBonusLastDate("");
         }
@@ -138,7 +138,12 @@ const Bonus = ({ refresh = false }) => {
                 goToNavigation("profile/offer/referral");
               }}
             >
-              <Text style={styles.bonusHistoryItemTitle("referral")}>
+              <Text
+                style={{
+                  ...styles.bonusHistoryItemTitle("referral"),
+                  color: "black",
+                }}
+              >
                 Реферальна програма
               </Text>
             </TouchableOpacity>
@@ -148,7 +153,9 @@ const Bonus = ({ refresh = false }) => {
                 goToNavigation("profile/partner");
               }}
             >
-              <Text style={styles.bonusHistoryItemTitle()}>
+              <Text
+                style={{ ...styles.bonusHistoryItemTitle(), color: "black" }}
+              >
                 Партнерська програма
               </Text>
             </TouchableOpacity>
@@ -158,7 +165,9 @@ const Bonus = ({ refresh = false }) => {
                 goToNavigation("profile/offer/gift");
               }}
             >
-              <Text style={styles.bonusHistoryItemTitle()}>
+              <Text
+                style={{ ...styles.bonusHistoryItemTitle(), color: "black" }}
+              >
                 Подарунок колективу
               </Text>
             </TouchableOpacity>

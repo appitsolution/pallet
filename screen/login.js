@@ -201,6 +201,12 @@ const Login = () => {
           <TouchableOpacity style={styles.submit} onPress={midRequest}>
             <Text style={styles.submitText}>Увійти</Text>
           </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => navigation.navigate("reset-password")}
+          >
+            <Text style={styles.changePasswordText}>Забув пароль?</Text>
+          </TouchableOpacity>
         </View>
       </View>
 

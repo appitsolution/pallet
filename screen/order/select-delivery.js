@@ -31,7 +31,7 @@ const OrderSelectDelivery = () => {
     },
   ]);
 
-  const [currentCity, setCurrentCity] = useState("Київ");
+  const [currentCity, setCurrentCity] = useState("Львів");
 
   const getCurrectCity = async () => {
     const getDataOrder = await AsyncStorage.getItem("orderData");
@@ -65,7 +65,11 @@ const OrderSelectDelivery = () => {
         delivery: currentDelivery.title, //Способ доставки
       })
     );
-    navigation.navigate("order/select-address");
+    if (currentDelivery.title === "Самовивіз") {
+      navigation.navigate("order/select-storehouse");
+    } else {
+      navigation.navigate("order/select-address");
+    }
   };
 
   return (
@@ -81,30 +85,6 @@ const OrderSelectDelivery = () => {
             <Text style={styles.backText}>Вибір способа доставки </Text>
           </View>
         </TouchableOpacity>
-
-        <View style={styles.cityButtonWrapper}>
-          <TouchableOpacity
-            style={styles.cityButton}
-            onPress={() => {
-              navigation.navigate("order/select-city");
-            }}
-          >
-            <View style={styles.cityButtonInfo}>
-              <View style={styles.cityButtonInfoIcon}>
-                <LocationIcon />
-              </View>
-              <View style={styles.cityButtonInfoContent}>
-                <Text style={styles.cityButtonInfoContentText}>Ваше місто</Text>
-                <Text style={styles.cityButtonInfoContentCity}>
-                  {currentCity === "" ? "Київ" : currentCity}
-                </Text>
-              </View>
-            </View>
-            <View style={styles.cityButtonArrow}>
-              <BackCatalog />
-            </View>
-          </TouchableOpacity>
-        </View>
 
         <View style={styles.selectDeliveryWrapper}>
           <View style={styles.selectDelivery}>
@@ -140,9 +120,33 @@ const OrderSelectDelivery = () => {
           </View>
         </View>
 
+        {/* <View style={styles.cityButtonWrapper}>
+          <TouchableOpacity
+            style={styles.cityButton}
+            onPress={() => {
+              navigation.navigate("order/select-city");
+            }}
+          >
+            <View style={styles.cityButtonInfo}>
+              <View style={styles.cityButtonInfoIcon}>
+                <LocationIcon />
+              </View>
+              <View style={styles.cityButtonInfoContent}>
+                <Text style={styles.cityButtonInfoContentText}>Ваше місто</Text>
+                <Text style={styles.cityButtonInfoContentCity}>
+                  {currentCity === "" ? "Бровари" : currentCity}
+                </Text>
+              </View>
+            </View>
+            <View style={styles.cityButtonArrow}>
+              <BackCatalog />
+            </View>
+          </TouchableOpacity>
+        </View> */}
+
         <View style={styles.selectNextWrapper}>
           <TouchableOpacity style={styles.selectNext} onPress={updateOrder}>
-            <Text style={styles.selectNextText}>Вибрати</Text>
+            <Text style={styles.selectNextText}>Далі</Text>
           </TouchableOpacity>
         </View>
       </View>

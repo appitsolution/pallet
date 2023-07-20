@@ -16,7 +16,8 @@ const ProfileNotification = () => {
 
   const requestNotification = async () => {
     const getNotification = await AsyncStorage.getItem("notification");
-    if (data === null) return;
+    if (getNotification === null || !getNotification) return;
+    console.log(getNotification);
     const data = JSON.parse(getNotification);
 
     setNotificationChat(data.chat);
@@ -75,15 +76,20 @@ const ProfileNotification = () => {
         </TouchableOpacity>
         <TouchableOpacity
           activeOpacity={0.7}
+          disabled={true}
           onPress={changeNotificationSocial}
-          style={styles.wrapper}
+          style={{ ...styles.wrapper, opacity: 0.5 }}
         >
           <View style={styles.wrapperText}>
-            <Text style={styles.wrapperTextTitle}>
-              Повідомлення про замовлення
-            </Text>
-            <Text style={styles.wrapperTextDesc}>
-              Нагадування про замовлення і повідомлення в чаті
+            <Text style={styles.wrapperTextTitle}>Повідомлення чату</Text>
+            <Text
+              style={{
+                ...styles.wrapperTextDesc,
+                fontWeight: "400",
+                color: "red",
+              }}
+            >
+              Ще в розробці{" "}
             </Text>
           </View>
 

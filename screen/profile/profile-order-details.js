@@ -14,6 +14,7 @@ import CopyIcon from "../../assets/Icons/CopyIcon";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { SERVER_ADMIN } from "@env";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const ProfileOrderDetails = () => {
   const navigation = useNavigation();
@@ -27,7 +28,7 @@ const ProfileOrderDetails = () => {
       const result = await axios.get(
         `${SERVER_ADMIN}/api/orders/${router?.params?.id}`
       );
-      console.log(result);
+      // console.log(result);
       setOrderData(result.data);
     } catch (err) {
       console.log(err);
@@ -55,6 +56,25 @@ const ProfileOrderDetails = () => {
     } else if (value === "rejected") {
       return { message: "Відхилено замовником", color: "#D6D6D6" };
     }
+  };
+
+  const againRequestOrder = async () => {
+    await AsyncStorage.setItem(
+      "orderData",
+      JSON.stringify({
+        id: "", //Ид заказа
+        idUser: orderData.againData.iduser,
+        statusOrder: "В процесі оброблення",
+        city: orderData.againData.city,
+        delivery: orderData.againData.delivery,
+        address: orderData.againData.address,
+        paymentSelect: orderData.againData.paymentSelect,
+        dateSend: "",
+        dateCreate: "",
+        products: [...orderData.againData.products],
+      })
+    );
+    navigation.navigate("order/select-date");
   };
 
   return (
@@ -86,7 +106,10 @@ const ProfileOrderDetails = () => {
         ) : (
           <>
             <View style={styles.orderDetailsButtonWrapper}>
-              <TouchableOpacity style={styles.orderDetailsButton}>
+              <TouchableOpacity
+                style={styles.orderDetailsButton}
+                onPress={() => againRequestOrder()}
+              >
                 <Text style={styles.orderDetailsButtonText}>
                   Повторити замовлення
                 </Text>
@@ -137,14 +160,40 @@ const ProfileOrderDetails = () => {
                           </Text>
                         </View>
                         <View style={styles.orderWrapperItemInfoBlock}>
-                          <Text style={styles.orderWrapperItemInfoBlockText}>
-                            Статус оплати:
-                          </Text>
-                          <Text
-                            style={styles.orderWrapperItemInfoBlockScore(true)}
-                          >
-                            Оплачене
-                          </Text>
+                          {product.statusPayment === "accept" ? (
+                            <>
+                              <Text
+                                style={styles.orderWrapperItemInfoBlockText}
+                              >
+                                Статус оплати:
+                              </Text>
+                              <Text
+                                style={styles.orderWrapperItemInfoBlockScore(
+                                  true
+                                )}
+                              >
+                                Оплачене
+                              </Text>
+                            </>
+                          ) : (
+                            <>
+                              <Text
+                                style={styles.orderWrapperItemInfoBlockText}
+                              >
+                                Статус оплати:
+                              </Text>
+                              <Text
+                                style={{
+                                  ...styles.orderWrapperItemInfoBlockScore(
+                                    true
+                                  ),
+                                  color: "#FFB21D",
+                                }}
+                              >
+                                Не оплачене
+                              </Text>
+                            </>
+                          )}
                         </View>
                       </View>
                     </View>
@@ -153,9 +202,21 @@ const ProfileOrderDetails = () => {
               </View>
             </View>
             <View style={styles.details}>
-              <View style={styles.detailsItem}>
+              {/* <View style={styles.detailsItem}>
                 <Text style={styles.detailsItemTitle}>Вартість товару</Text>
                 <Text style={styles.detailsItemScore}>24 500₴</Text>
+              </View> */}
+              <View style={styles.detailsItem}>
+                <Text style={styles.detailsItemTitle}>Тип Оплати</Text>
+                <Text style={styles.detailsItemScore}>
+                  {orderData?.paymentSelect}
+                </Text>
+              </View>
+              <View style={styles.detailsItem}>
+                <Text style={styles.detailsItemTitle}>Дата доставки </Text>
+                <Text style={styles.detailsItemScore}>
+                  {orderData?.dateSend}
+                </Text>
               </View>
               <View style={styles.detailsItem}>
                 <Text style={styles.detailsItemTitle}>Доставка</Text>

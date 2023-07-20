@@ -15,7 +15,29 @@ const OrderSelectDate = () => {
   const isFocusedAccept = useIsFocused();
   const navigation = useNavigation();
 
-  const [currentDate, setCurrentDate] = useState("2023-05-26");
+  const getCurrentDate = (format = false) => {
+    var currentDate = new Date();
+
+    var day = currentDate.getDate();
+    var month = currentDate.getMonth() + 1;
+    var year = currentDate.getFullYear();
+
+    if (day < 10) {
+      day = "0" + day;
+    }
+    if (month < 10) {
+      month = "0" + month;
+    }
+    if (format) {
+      return year + "-" + month + "-" + day;
+    }
+
+    var formattedDate = year + "." + month + "." + day;
+
+    return formattedDate;
+  };
+
+  const [currentDate, setCurrentDate] = useState(getCurrentDate(true));
 
   const handleDayPress = (day) => {
     // console.log("Выбранная дата:", day);
@@ -68,32 +90,16 @@ const OrderSelectDate = () => {
     return String(number);
   }
 
-  const getCurrentDate = () => {
-    var currentDate = new Date();
-
-    var day = currentDate.getDate();
-    var month = currentDate.getMonth() + 1;
-    var year = currentDate.getFullYear();
-
-    if (day < 10) {
-      day = "0" + day;
-    }
-    if (month < 10) {
-      month = "0" + month;
-    }
-
-    var formattedDate = year + "." + month + "." + day;
-
-    return formattedDate;
-  };
-
   const responseOrder = async () => {
     const fetchOrderData = await AsyncStorage.getItem("orderData");
     const fetchOrderDataJSON = JSON.parse(fetchOrderData);
 
     const result = await axios.post(`${SERVER}/auth/create/order`, {
       ...fetchOrderDataJSON,
+      againData: fetchOrderDataJSON,
     });
+
+    console.log(result.data);
 
     let bonusSum = 0;
 
@@ -118,7 +124,7 @@ const OrderSelectDate = () => {
     const generateId = generateNumber();
     const user = await useVerify();
 
-    const newOrderCreate = await AsyncStorage.setItem(
+    await AsyncStorage.setItem(
       "orderData",
       JSON.stringify({
         ...JSON.parse(getOrder),
@@ -158,6 +164,7 @@ const OrderSelectDate = () => {
             backgroundColor: "#ffffff",
           }}
           onDayPress={handleDayPress}
+          minDate={getCurrentDate(true)}
           markedDates={{
             [currentDate]: {
               selected: true,
